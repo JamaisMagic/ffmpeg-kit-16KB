@@ -17,7 +17,7 @@ if(POLICY CMP0054)
 endif()
 
 project (x265)
-cmake_minimum_required (VERSION 2.8.8) # OBJECT libraries require 2.8.8
+cmake_minimum_required (VERSION 3.5) # OBJECT libraries require 2.8.8
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
 include(CheckSymbolExists)
