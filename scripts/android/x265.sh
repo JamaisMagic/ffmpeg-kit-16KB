@@ -45,11 +45,12 @@ cmake -Wno-dev \
   -DHIGH_BIT_DEPTH=1 \
   ${ASM_OPTIONS} \
   -DCMAKE_SYSTEM_PROCESSOR="${ARCH}" \
-  -DENABLE_SHARED=0 "${BASEDIR}"/src/"${LIB_NAME}"/source || return 1
+  -DENABLE_SHARED=0 "${BASEDIR}"/src/"${LIB_NAME}"/source || return 1 \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 make -j$(get_cpu_count) || return 1
 
 make install || return 1
 
 # CREATE PACKAGE CONFIG MANUALLY
-create_x265_package_config "3.4" || return 1
+create_x265_package_config "3.5" || return 1
