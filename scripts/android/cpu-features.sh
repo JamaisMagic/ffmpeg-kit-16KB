@@ -1,6 +1,6 @@
 #!/bin/bash
 
-$(android_ndk_cmake) || return 1
+$(android_ndk_cmake) -DBUILD_TESTING=OFF || return 1
 
 make -C "$(get_cmake_build_directory)" || return 1
 
