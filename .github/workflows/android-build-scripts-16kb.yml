@@ -156,7 +156,8 @@ jobs:
       - name: run the build script
         # run: ./android.sh -d --lts --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
         # run: ./android.sh -d --lts --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-libaom --enable-libass --enable-freetype --enable-lame --enable-opus --enable-dav1d --enable-libvorbis --enable-libvpx --enable-x265
-        run: ./android.sh -d --lts --disable-arm-v7a --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvorbis --enable-libvpx --enable-x265
+        # run: ./android.sh -d --lts --disable-arm-v7a --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvorbis --enable-libvpx --enable-x265
+        run: ./android.sh -d --lts --disable-arm-v7a --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls
       - name: prepare and upload lts aar
         run: |
           AAR_PATH=$(find prebuilt -type f -name 'ffmpeg-kit.aar')
