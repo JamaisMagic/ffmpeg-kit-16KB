@@ -45,8 +45,9 @@ cmake -Wno-dev \
   -DHIGH_BIT_DEPTH=1 \
   ${ASM_OPTIONS} \
   -DCMAKE_SYSTEM_PROCESSOR="${ARCH}" \
-  -DENABLE_SHARED=0 "${BASEDIR}"/src/"${LIB_NAME}"/source || return 1 \
-  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DENABLE_SHARED=0 "${BASEDIR}"/src/"${LIB_NAME}"/source || return 1
 
 make -j$(get_cpu_count) || return 1
 

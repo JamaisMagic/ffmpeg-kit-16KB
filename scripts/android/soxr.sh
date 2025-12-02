@@ -25,6 +25,7 @@ cmake -Wno-dev \
   -DWITH_OPENMP=0 \
   -DWITH_PFFFT=1 \
   -DCMAKE_SYSTEM_PROCESSOR=$(get_cmake_system_processor) \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
   -DBUILD_SHARED_LIBS=0 "${BASEDIR}"/src/"${LIB_NAME}" || return 1
 
 make -j$(get_cpu_count) || return 1
