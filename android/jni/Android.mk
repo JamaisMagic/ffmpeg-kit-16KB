@@ -37,11 +37,9 @@ LOCAL_PATH := $(MY_LOCAL_PATH)/../ffmpeg-kit-android-lib/src/main/cpp
 # DEFINE ARCH FLAGS
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     MY_ARCH_FLAGS := ARM_V7A
-    ifeq ("$(shell test -e $(MY_LOCAL_PATH)/../build/.lts && echo lts)","lts")
-        MY_ARM_NEON := false
-    else
-        MY_ARM_NEON := true
-    endif
+    # NDK r25c and later require NEON for all armeabi-v7a builds
+    # Always enable NEON to support newer NDK versions
+    MY_ARM_NEON := true
 endif
 ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
     MY_ARCH_FLAGS := ARM64_V8A

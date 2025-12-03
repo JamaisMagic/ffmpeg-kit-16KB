@@ -442,6 +442,15 @@ fi
   --enable-v4l2-m2m \
   --disable-outdev=fbdev \
   --disable-indev=fbdev \
+  --disable-indev=v4l2 \
+  --disable-outdev=v4l2 \
+  --disable-indev=vfwcap \
+  --disable-outdev=vfw \
+  --disable-indev=dshow \
+  --disable-outdev=dshow \
+  --disable-indev=lavfi \
+  --disable-indev=oss \
+  --disable-outdev=oss \
   ${SIZE_OPTIONS} \
   --disable-xmm-clobber-test \
   ${DEBUG_OPTIONS} \
