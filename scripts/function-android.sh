@@ -92,6 +92,8 @@ APP_PLATFORM := android-${API}
 APP_CFLAGS := -O3 -DANDROID ${LTS_BUILD_FLAG}${BUILD_DATE} -Wall -Wno-deprecated-declarations -Wno-pointer-sign -Wno-switch -Wno-unused-result -Wno-unused-variable
 
 APP_LDFLAGS := "-Wl,-z,max-page-size=16384,--hash-style=both"
+
+APP_SUPPORT_FLEXIBLE_PAGE_SIZES := true
 EOF
 }
 
@@ -1021,6 +1023,7 @@ android_ndk_cmake() {
     -B"${BUILD_DIR}" \
     "${ASM_OPTIONS}" \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
     -DANDROID_PLATFORM=android-"${API}"
 }
 

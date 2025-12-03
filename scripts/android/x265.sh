@@ -46,6 +46,7 @@ cmake -Wno-dev \
   ${ASM_OPTIONS} \
   -DCMAKE_SYSTEM_PROCESSOR="${ARCH}" \
   -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
   -DENABLE_SHARED=0 "${BASEDIR}"/src/"${LIB_NAME}"/source || return 1
 
 make -j$(get_cpu_count) || return 1

@@ -40,6 +40,7 @@ cmake -Wno-dev \
  -DENABLE_HEAVY_LOGGING=0 \
  -DENABLE_APPS=0 \
  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+ -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
  -DENABLE_SHARED=0 "${BASEDIR}"/src/"${LIB_NAME}" || return 1
 
 make -j$(get_cpu_count) || return 1
