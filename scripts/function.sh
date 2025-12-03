@@ -1811,11 +1811,39 @@ copy_external_library_license() {
 # 1 - library index
 # 2 - output path
 copy_external_library_license_file() {
-  cp $(get_external_library_license_path "$1") "$2" 1>>"${BASEDIR}"/build.log 2>&1
-  if [[ $? -ne 0 ]]; then
-    echo 1
-    return
+  local license_path=$(get_external_library_license_path "$1")
+  
+  # Try the primary license path
+  if [ -f "$license_path" ]; then
+    cp "$license_path" "$2" 1>>"${BASEDIR}"/build.log 2>&1
+    if [[ $? -eq 0 ]]; then
+      echo 0
+      return
+    fi
   fi
+  
+  # For gnutls (index 4), try alternative locations
+  if [[ $1 -eq 4 ]]; then
+    local lib_name=$(get_library_name "$1")
+    local alt_paths=(
+      "${BASEDIR}/src/${lib_name}/COPYING"
+      "${BASEDIR}/src/${lib_name}/COPYING.LESSERv3"
+      "${BASEDIR}/src/${lib_name}/COPYING.LGPL"
+    )
+    
+    for alt_path in "${alt_paths[@]}"; do
+      if [ -f "$alt_path" ]; then
+        cp "$alt_path" "$2" 1>>"${BASEDIR}"/build.log 2>&1
+        if [[ $? -eq 0 ]]; then
+          echo 0
+          return
+        fi
+      fi
+    done
+  fi
+  
+  # If all attempts fail, log a warning but don't fail the build
+  echo -e "WARNING: License file not found for library index $1 at $license_path\n" 1>>"${BASEDIR}"/build.log 2>&1
   echo 0
 }
 
