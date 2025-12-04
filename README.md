@@ -4,9 +4,9 @@ Google request developers to build new with new r27 and r28 ndk but ffmpeg-kit h
 <i>Edit: As original devs said, master branch has been tested upto NDK r27.</i>
 
 </p>
-Lucky for us, there is a version of ndk r23 and r25 in CI which supports 16KB page sizes too.
-make sure to download this ndk version and compile ffmpeg-kit with this ndk only.<br/>
-NDK : <a href="https://ci.android.com/builds/branches/aosp-ndk-release-r23/grid">R23</a> <a href="https://ci.android.com/builds/branches/aosp-ndk-r25-release/grid">R25</a>
+This fork has been updated to use NDK r27d which supports 16KB page sizes.
+The main build now uses NDK r27d and includes all necessary modifications for 16KB page size support.<br/>
+NDK r27d: <a href="https://developer.android.com/ndk/downloads">Official Download</a>
 </p>
 You can find all details related to this update here. https://developer.android.com/guide/practices/page-sizes
 </br>
