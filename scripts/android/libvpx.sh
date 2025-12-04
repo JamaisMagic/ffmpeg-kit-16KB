@@ -46,7 +46,6 @@ overwrite_file "${BASEDIR}"/tools/patch/make/libvpx/configure.sh "${BASEDIR}"/sr
   --target="${TARGET_CPU}-android-gcc" \
   --extra-cflags="${CFLAGS}" \
   --extra-cxxflags="${CXXFLAGS}" \
-  --extra-ldflags="${LDFLAGS}" \
   --as=yasm \
   --log=yes \
   --enable-libs \
