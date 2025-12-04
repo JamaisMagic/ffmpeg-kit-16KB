@@ -1,13 +1,6 @@
 MY_LOCAL_PATH := $(call my-dir)
 $(call import-add-path, $(MY_LOCAL_PATH))
 
-# Import c++_shared module if APP_STL is set to c++_shared (required for NDK r27+)
-# In NDK r27+, c++_shared must be explicitly imported when referenced in LOCAL_SHARED_LIBRARIES
-# The module is provided by the NDK's cxx-stl system
-ifeq ($(APP_STL), c++_shared)
-    $(call import-module, cxx-stl/c++_shared)
-endif
-
 MY_ARMV7 := false
 MY_ARMV7_NEON := false
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
@@ -96,9 +89,9 @@ ifeq ($(MY_ARMV7_NEON), true)
     LOCAL_CFLAGS := $(MY_CFLAGS)
     LOCAL_LDLIBS := $(MY_LDLIBS)
     LOCAL_SHARED_LIBRARIES := libavcodec_neon libavfilter_neon libswscale_neon libavformat_neon libavutil_neon libswresample_neon libavdevice_neon
-    ifeq ($(APP_STL), c++_shared)
-        LOCAL_SHARED_LIBRARIES += c++_shared # otherwise NDK will not add the library for packaging
-    endif
+    # Note: In NDK r27+, when APP_STL := c++_shared is set in Application.mk,
+    # the NDK automatically handles c++_shared and includes it in packaging.
+    # No need to add it to LOCAL_SHARED_LIBRARIES.
     LOCAL_ARM_NEON := true
     include $(BUILD_SHARED_LIBRARY)
 
@@ -118,9 +111,9 @@ ifeq ($(MY_BUILD_GENERIC_FFMPEG_KIT), true)
     LOCAL_CFLAGS := $(MY_CFLAGS)
     LOCAL_LDLIBS := $(MY_LDLIBS)
     LOCAL_SHARED_LIBRARIES := libavfilter libavformat libavcodec libavutil libswresample libavdevice libswscale
-    ifeq ($(APP_STL), c++_shared)
-        LOCAL_SHARED_LIBRARIES += c++_shared # otherwise NDK will not add the library for packaging
-    endif
+    # Note: In NDK r27+, when APP_STL := c++_shared is set in Application.mk,
+    # the NDK automatically handles c++_shared and includes it in packaging.
+    # No need to add it to LOCAL_SHARED_LIBRARIES.
     LOCAL_ARM_NEON := ${MY_ARM_NEON}
     include $(BUILD_SHARED_LIBRARY)
 
