@@ -1,6 +1,13 @@
 MY_LOCAL_PATH := $(call my-dir)
 $(call import-add-path, $(MY_LOCAL_PATH))
 
+# Import c++_shared module if APP_STL is set to c++_shared (required for NDK r27+)
+# In NDK r27+, c++_shared must be explicitly imported when referenced in LOCAL_SHARED_LIBRARIES
+# The module is provided by the NDK's cxx-stl system
+ifeq ($(APP_STL), c++_shared)
+    $(call import-module, cxx-stl/c++_shared)
+endif
+
 MY_ARMV7 := false
 MY_ARMV7_NEON := false
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
