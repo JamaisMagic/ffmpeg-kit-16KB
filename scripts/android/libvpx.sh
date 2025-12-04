@@ -4,6 +4,12 @@
 export CFLAGS="$(get_cflags "${LIB_NAME}") -I${LIB_INSTALL_BASE}/cpu-features/include/ndk_compat"
 export LDFLAGS="$(get_ldflags "${LIB_NAME}")"
 
+# For libvpx configure with NDK r27, the configure script uses ${LD} (lld) directly
+# to link test executables. We need to ensure lld can find system libraries.
+# Override LD to use the compiler as the linker, which knows about the sysroot
+# and will properly handle all the linker flags including 16KB page size support
+export LD="${CC}"
+
 # SET BUILD OPTIONS
 TARGET_CPU=""
 ASM_OPTIONS=""

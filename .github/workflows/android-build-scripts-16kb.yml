@@ -173,6 +173,9 @@ jobs:
       - name: print build logs
         if: ${{ always() }}
         run: cat build.log
+      - name: print config logs
+        if: ${{ failure() }}
+        run: cat config.log
       - name: print ffbuild logs
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
