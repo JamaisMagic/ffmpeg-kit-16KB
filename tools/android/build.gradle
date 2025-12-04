@@ -1,11 +1,13 @@
-apply plugin: 'com.android.library'
+plugins {
+    id "com.android.library"
+}
 
 android {
     if (project.android.hasProperty("namespace")) {
         namespace 'com.arthenica.ffmpegkit'
     }
     compileSdk 35
-    ndkVersion "22.1.7171670"
+    ndkVersion "27.0.12077973"
 
     defaultConfig {
         minSdk 24
