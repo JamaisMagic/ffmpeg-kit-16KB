@@ -2,6 +2,7 @@
 
 # UPDATE BUILD FLAGS
 export CFLAGS="$(get_cflags "${LIB_NAME}") -I${LIB_INSTALL_BASE}/cpu-features/include/ndk_compat"
+export LDFLAGS="$(get_ldflags "${LIB_NAME}")"
 
 # SET BUILD OPTIONS
 TARGET_CPU=""
@@ -45,6 +46,7 @@ overwrite_file "${BASEDIR}"/tools/patch/make/libvpx/configure.sh "${BASEDIR}"/sr
   --target="${TARGET_CPU}-android-gcc" \
   --extra-cflags="${CFLAGS}" \
   --extra-cxxflags="${CXXFLAGS}" \
+  --extra-ldflags="${LDFLAGS}" \
   --as=yasm \
   --log=yes \
   --enable-libs \
