@@ -27,8 +27,7 @@ on:
 
 jobs:
   build-main-on-linux:
-    if: false
-    name: android main on linux (ndk-r25-16k)
+    name: android main on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -73,9 +72,9 @@ jobs:
           java-version: '17'
       - name: prerequisites
         run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.10.2.4988404" "cmake;3.18.1"
-      - name: set up android ndk r25 (16k support)
+      - name: set up android ndk r27 (16k support)
         run: |
-          curl -L -s "https://dl.google.com/android/repository/android-ndk-r25c-linux.zip" -o ndk.zip
+          curl -L -s "https://dl.google.com/android/repository/android-ndk-r27d-linux.zip" -o ndk.zip
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
@@ -89,20 +88,29 @@ jobs:
             echo "Error: ffmpeg-kit.aar not found in prebuilt directory."
             exit 1
           fi
-          mv "$AAR_PATH" "ffmpeg-kit-main-ndk-r25-16k.aar"
+          mv "$AAR_PATH" "ffmpeg-kit-main-ndk-r27-16k.aar"
       - uses: actions/upload-artifact@v4
         with:
           name: ffmpeg-kit-main-aar
-          path: ffmpeg-kit-main-ndk-r25-16k.aar
+          path: ffmpeg-kit-main-ndk-r27-16k.aar
           if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
         run: cat build.log
+      - name: print config logs
+        if: ${{ failure() }}
+        run: |
+          # Print libvpx config.log if it exists
+          if [ -f ./src/libvpx/config.log ]; then
+            echo "=== libvpx config.log ==="
+            tail -500 ./src/libvpx/config.log
+          fi
       - name: print ffbuild logs
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
 
   build-lts-on-linux:
+    if: false
     name: android lts on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
     defaults:
@@ -208,7 +216,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG_NAME }}
-          name: "Android AARs (NDK r25-16k) - ${{ env.TAG_NAME }}"
-          body: "Automated release of Android AAR files from Linux builds using NDK r25 with 16kB page size support."
+          name: "Android AARs (NDK r27-16k) - ${{ env.TAG_NAME }}"
+          body: "Automated release of Android AAR files from Linux builds using NDK r27 with 16kB page size support."
           prerelease: true
           files: aar-artifacts/*/*.aar
