@@ -175,7 +175,12 @@ jobs:
         run: cat build.log
       - name: print config logs
         if: ${{ failure() }}
-        run: cat config.log
+        run: |
+          # Print libvpx config.log if it exists
+          if [ -f ./src/libvpx/config.log ]; then
+            echo "=== libvpx config.log ==="
+            tail -500 ./src/libvpx/config.log
+          fi
       - name: print ffbuild logs
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
