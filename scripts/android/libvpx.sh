@@ -13,8 +13,9 @@ export LDFLAGS="${LDFLAGS} --sysroot=${ANDROID_SYSROOT}"
 # The host library path (-L${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${TOOLCHAIN}/lib) 
 # contains x86_64 libraries that are incompatible with ARM targets
 # We need to remove this specific path pattern from LDFLAGS
-HOST_LIB_PATH="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${TOOLCHAIN}/lib"
-export LDFLAGS=$(echo "${LDFLAGS}" | sed "s|-L${HOST_LIB_PATH}||g")
+# Match only the path ending with /toolchains/llvm/prebuilt/TOOLCHAIN/lib (without subdirectories)
+# This is the host library path, not the ARM-specific paths like .../arm-linux-androideabi/lib or .../sysroot/...
+export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-L[^ ]*/toolchains/llvm/prebuilt/[^ /]+/lib([[:space:]]|$)||g")
 
 # Extract linker flags (those starting with -Wl,) and add them to CFLAGS/CXXFLAGS
 # This ensures the configure script's test linking works when using the compiler
