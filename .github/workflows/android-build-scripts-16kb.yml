@@ -103,7 +103,7 @@ jobs:
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
 
   build-lts-on-linux:
-    name: android lts on linux (ndk-r25-16k)
+    name: android lts on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -148,7 +148,7 @@ jobs:
           java-version: '17'
       - name: prerequisites
         run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.10.2.4988404" "cmake;3.18.1"
-      - name: set up android ndk r25 (16k support)
+      - name: set up android ndk r27 (16k support)
         run: |
           curl -L -s "https://dl.google.com/android/repository/android-ndk-r27d-linux.zip" -o ndk.zip
           unzip -q -o ndk.zip -d .ndk
@@ -164,11 +164,11 @@ jobs:
             echo "Error: ffmpeg-kit.aar not found in prebuilt directory."
             exit 1
           fi
-          mv "$AAR_PATH" "ffmpeg-kit-lts-ndk-r25-16k.aar"
+          mv "$AAR_PATH" "ffmpeg-kit-lts-ndk-r27-16k.aar"
       - uses: actions/upload-artifact@v4
         with:
           name: ffmpeg-kit-lts-aar
-          path: ffmpeg-kit-lts-ndk-r25-16k.aar
+          path: ffmpeg-kit-lts-ndk-r27-16k.aar
           if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
