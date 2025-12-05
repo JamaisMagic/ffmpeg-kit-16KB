@@ -48,25 +48,33 @@ fi
 # WORKAROUND TO FIX fseeko/ftello ERRORS WITH NDK r27
 # x264's config.h defines fseek as fseeko and ftell as ftello,
 # but these functions need _GNU_SOURCE or _POSIX_C_SOURCE to be declared.
-# The Makefile already has -D_GNU_SOURCE, but we need to ensure it's defined
-# before stdio.h is included. Patch common/base.c to define _GNU_SOURCE
-# at the very beginning, and also ensure config.h includes it.
+# The issue is that config.h includes common/base.h which includes stdio.h,
+# and _GNU_SOURCE must be defined before stdio.h is included.
+# Patch common/base.h to define _GNU_SOURCE before it includes stdio.h.
+if [[ -f "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h ]]; then
+  # Remove any existing _GNU_SOURCE define to avoid duplicates
+  ${SED_INLINE} '/^#define _GNU_SOURCE/d' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h 2>/dev/null || true
+  # Insert _GNU_SOURCE before the first #include that might include stdio.h
+  # Look for #include <stdio.h> or #include "stdio.h" or includes that might pull in stdio.h
+  if grep -qE '#include\s*[<"]stdio\.h' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h 2>/dev/null; then
+    ${SED_INLINE} '/#include\s*[<"]stdio\.h/i\
+#define _GNU_SOURCE\
+' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h || return 1
+  else
+    # If stdio.h is not directly included, insert at the beginning
+    ${SED_INLINE} '1i\
+#define _GNU_SOURCE\
+' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h || return 1
+  fi
+fi
+# Also ensure common/base.c has _GNU_SOURCE before it includes config.h
 if [[ -f "${BASEDIR}"/src/"${LIB_NAME}"/common/base.c ]]; then
   # Remove any existing _GNU_SOURCE define to avoid duplicates
   ${SED_INLINE} '/^#define _GNU_SOURCE/d' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.c 2>/dev/null || true
-  # Insert _GNU_SOURCE at the very first line, before any includes or other code
+  # Insert _GNU_SOURCE at the very first line, before any includes
   ${SED_INLINE} '1i\
 #define _GNU_SOURCE\
 ' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.c || return 1
-fi
-# Also patch config.h to ensure _GNU_SOURCE is defined before it includes stdio.h
-if [[ -f "${BASEDIR}"/src/"${LIB_NAME}"/config.h ]]; then
-  # Remove any existing _GNU_SOURCE define to avoid duplicates
-  ${SED_INLINE} '/^#define _GNU_SOURCE/d' "${BASEDIR}"/src/"${LIB_NAME}"/config.h 2>/dev/null || true
-  # Insert _GNU_SOURCE at the very first line of config.h
-  ${SED_INLINE} '1i\
-#define _GNU_SOURCE\
-' "${BASEDIR}"/src/"${LIB_NAME}"/config.h || return 1
 fi
 
 make -j$(get_cpu_count) || return 1
