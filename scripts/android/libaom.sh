@@ -58,4 +58,4 @@ make -j$(get_cpu_count) || return 1
 make install || return 1
 
 # CREATE PACKAGE CONFIG MANUALLY
-create_libaom_package_config "3.6.1" || return 1
+create_libaom_package_config "3.13.1" || return 1
