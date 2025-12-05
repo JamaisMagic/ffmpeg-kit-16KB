@@ -1,5 +1,6 @@
 plugins {
     id "com.android.library"
+    id "com.vanniktech.maven.publish"
 }
 
 android {
@@ -12,8 +13,8 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 35
-        versionCode 60001
-        versionName "6.0.1"
+        versionCode 60003
+        versionName "6.0.3"
         project.archivesBaseName = "ffmpeg-kit"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -65,4 +66,37 @@ dependencies {
     implementation 'com.arthenica:smart-exception-java:0.2.1'
     testImplementation "androidx.test.ext:junit:1.1.5"
     testImplementation 'org.json:json:20230618'
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+
+    coordinates("io.github.jamaismagic.ffmpeg", "ffmpeg-kit-main-16kb", "6.0.3")
+
+    pom {
+        name = "FFMPEG Android 16KB"
+        description = "FFmpeg Kit for Android (Maven Package for https://github.com/JamaisMagic/ffmpeg-kit-16KB)."
+        inceptionYear = "2025"
+        url = "https://github.com/JamaisMagic/ffmpeg-kit-16KB"
+        licenses {
+            license {
+                name = "GNU LESSER GENERAL PUBLIC LICENSE Version 3"
+                url = "https://www.gnu.org/licenses/lgpl-3.0.txt"
+                distribution = "https://www.gnu.org/licenses/lgpl-3.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "JamaisMagic"
+                name = "JamaisNg"
+                url = "https://github.com/JamaisMagic"
+            }
+        }
+        scm {
+            url = "https://github.com/JamaisMagic/ffmpeg-kit-16KB"
+            connection = "scm:git@github.com:JamaisMagic/ffmpeg-kit-16KB.git"
+            developerConnection = "=scm:git@github.com:JamaisMagic/ffmpeg-kit-16KB.git"
+        }
+    }
 }
