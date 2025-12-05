@@ -93,7 +93,7 @@ get_library_source() {
     ;;
   libaom)
     SOURCE_REPO_URL="https://github.com/arthenica/libaom"
-    SOURCE_ID="v3.6.1"
+    SOURCE_ID="v3.13.1"
     SOURCE_TYPE="TAG"
     ;;
   libass)
