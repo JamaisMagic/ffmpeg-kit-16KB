@@ -2,28 +2,6 @@ name: android build scripts
 
 on:
   workflow_dispatch: # Allows manual triggering, which will create a release
-  push:
-    branches:
-      - development
-      - main
-    paths:
-      - '.github/workflows/android-build-scripts.yml'
-      - 'android/**'
-      - '!android/README.md'
-      - 'scripts/**'
-      - 'tools/**'
-      - 'android.sh'
-  pull_request:
-    branches:
-      - development
-      - main
-    paths:
-      - '.github/workflows/android-build-scripts.yml'
-      - 'android/**'
-      - '!android/README.md'
-      - 'scripts/**'
-      - 'tools/**'
-      - 'android.sh'
 
 jobs:
   build-main-on-linux:
