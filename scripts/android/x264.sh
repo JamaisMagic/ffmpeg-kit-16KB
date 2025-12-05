@@ -45,6 +45,16 @@ fi
   ${DEBUG_OPTIONS} \
   --host="${HOST}" || return 1
 
+# WORKAROUND TO FIX fseeko/ftello ERRORS WITH NDK r27
+# x264's config.h defines fseek as fseeko and ftell as ftello,
+# but these functions need _GNU_SOURCE or _POSIX_C_SOURCE to be declared.
+# Patch common/base.c to define _GNU_SOURCE before including headers.
+if [[ -f "${BASEDIR}"/src/"${LIB_NAME}"/common/base.c ]]; then
+  if ! grep -q "^#define _GNU_SOURCE" "${BASEDIR}"/src/"${LIB_NAME}"/common/base.c 2>/dev/null; then
+    ${SED_INLINE} '1i#define _GNU_SOURCE' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.c || return 1
+  fi
+fi
+
 make -j$(get_cpu_count) || return 1
 
 make install || return 1
