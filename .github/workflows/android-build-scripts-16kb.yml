@@ -174,7 +174,7 @@ jobs:
     name: create github release
     # This job will only start if BOTH of the jobs above complete successfully.
     needs: [build-main-on-linux, build-lts-on-linux]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # This job will only run if the workflow is started manually.
     if: github.event_name == 'workflow_dispatch'
     permissions:
