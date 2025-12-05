@@ -88,7 +88,6 @@ jobs:
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
 
   build-lts-on-linux:
-    if: false
     name: android lts on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
     defaults:
