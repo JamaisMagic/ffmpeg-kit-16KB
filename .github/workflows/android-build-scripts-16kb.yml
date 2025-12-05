@@ -80,7 +80,7 @@ jobs:
       - name: run the build script
         # run: ./android.sh -d --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
         # run: ./android.sh -d --disable-arm-v7a --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-libaom --enable-libass --enable-freetype --enable-lame --enable-opus --enable-dav1d --enable-libvorbis --enable-libvpx --enable-x265
-        run: ./android.sh -d --disable-arm-v7a --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-freetype --enable-lame --enable-dav1d --enable-libvorbis --enable-libvpx --enable-x265
+        run: ./android.sh -d --disable-arm-v7a --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvorbis --enable-libvpx --enable-x265
       - name: prepare and upload main aar
         run: |
           AAR_PATH=$(find prebuilt -type f -name 'ffmpeg-kit.aar')
