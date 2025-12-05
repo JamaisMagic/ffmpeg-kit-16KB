@@ -50,18 +50,27 @@ fi
 # but these functions need _GNU_SOURCE or _POSIX_C_SOURCE to be declared.
 # The issue is that config.h includes common/base.h which includes stdio.h,
 # and _GNU_SOURCE must be defined before stdio.h is included.
-# Patch common/base.h to define _GNU_SOURCE before it includes stdio.h.
+# Since config.h is generated, we need to patch it to define _GNU_SOURCE
+# at the very beginning, before any includes or other definitions.
+if [[ -f "${BASEDIR}"/src/"${LIB_NAME}"/config.h ]]; then
+  # Remove any existing _GNU_SOURCE define to avoid duplicates
+  ${SED_INLINE} '/^#define _GNU_SOURCE/d' "${BASEDIR}"/src/"${LIB_NAME}"/config.h 2>/dev/null || true
+  # Insert _GNU_SOURCE at the very first line of config.h, before everything else
+  ${SED_INLINE} '1i\
+#define _GNU_SOURCE\
+' "${BASEDIR}"/src/"${LIB_NAME}"/config.h || return 1
+fi
+# Also patch common/base.h to ensure _GNU_SOURCE is defined before it includes stdio.h
 if [[ -f "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h ]]; then
   # Remove any existing _GNU_SOURCE define to avoid duplicates
   ${SED_INLINE} '/^#define _GNU_SOURCE/d' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h 2>/dev/null || true
-  # Insert _GNU_SOURCE before the first #include that might include stdio.h
-  # Look for #include <stdio.h> or #include "stdio.h" or includes that might pull in stdio.h
-  if grep -qE '#include\s*[<"]stdio\.h' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h 2>/dev/null; then
-    ${SED_INLINE} '/#include\s*[<"]stdio\.h/i\
+  # Insert _GNU_SOURCE before the first #include
+  if grep -qE '^#include' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h 2>/dev/null; then
+    ${SED_INLINE} '/^#include/i\
 #define _GNU_SOURCE\
 ' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h || return 1
   else
-    # If stdio.h is not directly included, insert at the beginning
+    # If no includes found, insert at the beginning
     ${SED_INLINE} '1i\
 #define _GNU_SOURCE\
 ' "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h || return 1
