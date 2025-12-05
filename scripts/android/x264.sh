@@ -59,6 +59,10 @@ if [[ -f "${BASEDIR}"/src/"${LIB_NAME}"/config.h ]]; then
   ${SED_INLINE} '1i\
 #define _GNU_SOURCE\
 ' "${BASEDIR}"/src/"${LIB_NAME}"/config.h || return 1
+
+  # Disable remapping fseek/ftell to fseeko/ftello to avoid undeclared errors
+  ${SED_INLINE} '/^#define fseek fseeko/d' "${BASEDIR}"/src/"${LIB_NAME}"/config.h 2>/dev/null || true
+  ${SED_INLINE} '/^#define ftell ftello/d' "${BASEDIR}"/src/"${LIB_NAME}"/config.h 2>/dev/null || true
 fi
 # Also patch common/base.h to ensure _GNU_SOURCE is defined before it includes stdio.h
 if [[ -f "${BASEDIR}"/src/"${LIB_NAME}"/common/base.h ]]; then
