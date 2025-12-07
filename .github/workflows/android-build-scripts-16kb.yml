@@ -6,7 +6,6 @@ on:
 jobs:
   build-main-on-linux:
     name: android main on linux (ndk-r27-16k)
-    if: false
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -75,14 +74,6 @@ jobs:
       - name: print build logs
         if: ${{ always() }}
         run: cat build.log
-      - name: print config logs
-        if: ${{ failure() }}
-        run: |
-          # Print libvpx config.log if it exists
-          if [ -f ./src/libvpx/config.log ]; then
-            echo "=== libvpx config.log ==="
-            tail -500 ./src/libvpx/config.log
-          fi
       - name: print ffbuild logs
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
@@ -157,14 +148,6 @@ jobs:
       - name: print build logs
         if: ${{ always() }}
         run: cat build.log
-      - name: print config logs
-        if: ${{ failure() }}
-        run: |
-          # Print libvpx config.log if it exists
-          if [ -f ./src/libvpx/config.log ]; then
-            echo "=== libvpx config.log ==="
-            tail -500 ./src/libvpx/config.log
-          fi
       - name: print ffbuild logs
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
