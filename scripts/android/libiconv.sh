@@ -47,6 +47,12 @@ fi
   --disable-rpath \
   --host="${HOST}" || return 1
 
+# Prebuild the genaliases generator with the host compiler so make does not
+# attempt to build (and execute) a cross-compiled binary.
+pushd "${BASEDIR}/src/${LIB_NAME}" >/dev/null || return 1
+"${CC_FOR_BUILD}" lib/genaliases.c -o genaliases || { popd >/dev/null; return 1; }
+popd >/dev/null || return 1
+
 make -j$(get_cpu_count) || return 1
 
 make install || return 1
