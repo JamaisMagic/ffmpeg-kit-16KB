@@ -13,6 +13,15 @@ ln -s -f "$(which aclocal)" "${BASEDIR}"/.tmp/aclocal-1.17
 ln -s -f "$(which automake)" "${BASEDIR}"/.tmp/automake-1.17
 PATH="${BASEDIR}/.tmp":$PATH
 
+# Use a native compiler for build-time generators (e.g., genaliases) to avoid
+# executing cross-compiled ARM binaries on the host.
+if command -v clang >/dev/null 2>&1; then
+  export CC_FOR_BUILD="$(command -v clang)"
+elif command -v gcc >/dev/null 2>&1; then
+  export CC_FOR_BUILD="$(command -v gcc)"
+else
+  export CC_FOR_BUILD="$(command -v cc)"
+fi
 if [[ ! -d "${BASEDIR}"/src/"${LIB_NAME}"/gnulib ]]; then
 
   # INIT SUBMODULES
