@@ -133,7 +133,7 @@ get_library_source() {
     ;;
   libtheora)
     SOURCE_REPO_URL="https://github.com/arthenica/theora"
-    SOURCE_ID="v1.1.1"
+    SOURCE_ID="v1.2.0"
     SOURCE_TYPE="TAG"
     ;;
   libuuid)
