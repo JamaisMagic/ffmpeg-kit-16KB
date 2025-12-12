@@ -193,7 +193,7 @@ get_library_source() {
     ;;
   rubberband)
     SOURCE_REPO_URL="https://github.com/arthenica/rubberband"
-    SOURCE_ID="v1.8.2"
+    SOURCE_ID="v1.9.2"
     SOURCE_TYPE="TAG"
     ;;
   sdl)
