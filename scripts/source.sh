@@ -208,7 +208,7 @@ get_library_source() {
     ;;
   snappy)
     SOURCE_REPO_URL="https://github.com/arthenica/snappy"
-    SOURCE_ID="1.1.9"
+    SOURCE_ID="1.2.2"
     SOURCE_TYPE="TAG"
     ;;
   soxr)
