@@ -128,7 +128,7 @@ get_library_source() {
     ;;
   libsndfile)
     SOURCE_REPO_URL="https://github.com/arthenica/libsndfile"
-    SOURCE_ID="1.2.0"
+    SOURCE_ID="1.2.2"
     SOURCE_TYPE="TAG"
     ;;
   libtheora)
