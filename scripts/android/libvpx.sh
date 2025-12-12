@@ -2,6 +2,30 @@
 
 # UPDATE BUILD FLAGS
 export CFLAGS="$(get_cflags "${LIB_NAME}") -I${LIB_INSTALL_BASE}/cpu-features/include/ndk_compat"
+export LDFLAGS="$(get_ldflags "${LIB_NAME}")"
+
+# For libvpx configure with NDK r27, we need to ensure the linker can find system libraries
+# The configure script uses ${LD} (lld) directly, so we need to add sysroot to LDFLAGS
+# Also, pass linker flags via CFLAGS/CXXFLAGS so the compiler passes them through
+export LDFLAGS="${LDFLAGS} --sysroot=${ANDROID_SYSROOT}"
+
+# Remove the host library path from LDFLAGS to prevent linking against x86_64 libraries
+# The host library path (-L${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${TOOLCHAIN}/lib) 
+# contains x86_64 libraries that are incompatible with ARM targets
+# We need to remove this specific path pattern from LDFLAGS
+# Match only the path ending with /toolchains/llvm/prebuilt/TOOLCHAIN/lib (without subdirectories)
+# This is the host library path, not the ARM-specific paths like .../arm-linux-androideabi/lib or .../sysroot/...
+export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-L[^ ]*/toolchains/llvm/prebuilt/[^ /]+/lib([[:space:]]|$)||g")
+
+# Extract linker flags (those starting with -Wl,) and add them to CFLAGS/CXXFLAGS
+# This ensures the configure script's test linking works when using the compiler
+LINKER_FLAGS_ONLY=$(echo "${LDFLAGS}" | grep -oE '\-Wl,[^ ]+' | tr '\n' ' ')
+export CFLAGS="${CFLAGS} ${LINKER_FLAGS_ONLY}"
+export CXXFLAGS="${CXXFLAGS} ${LINKER_FLAGS_ONLY}"
+
+# Set LD to CC for libvpx configure to ensure proper linking with sysroot
+# This is crucial for NDK r27+ where standalone lld might not pick up sysroot correctly
+export LD="${CC}"
 
 # SET BUILD OPTIONS
 TARGET_CPU=""

@@ -23,6 +23,8 @@ cmake -Wno-dev \
   -DFFT_LIB=kissfft \
   -DKISSFFT_SOURCE_DIR="${BASEDIR}"/src/"${LIB_NAME}"/src/3rdparty/kissfft \
   -DBUILD_SHARED_LIBS=0 \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
   -DBUILD_TESTS=0 "${BASEDIR}"/src/"${LIB_NAME}" || return 1
 
 make -j$(get_cpu_count) || return 1

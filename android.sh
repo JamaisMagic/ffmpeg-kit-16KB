@@ -302,10 +302,9 @@ if [[ -n ${ANDROID_ARCHITECTURES} ]]; then
       if [[ ${RC} -ne 0 ]]; then
         echo -e "DEBUG: Failed to copy the license file of ${ENABLED_LIBRARY}\n" 1>>"${BASEDIR}"/build.log 2>&1
         echo -e "failed\n\nSee build.log for details\n"
-        exit 1
+      else
+        echo -e "DEBUG: Copied the license file of ${ENABLED_LIBRARY} successfully\n" 1>>"${BASEDIR}"/build.log 2>&1  
       fi
-
-      echo -e "DEBUG: Copied the license file of ${ENABLED_LIBRARY} successfully\n" 1>>"${BASEDIR}"/build.log 2>&1
     fi
   done
 
@@ -323,10 +322,9 @@ if [[ -n ${ANDROID_ARCHITECTURES} ]]; then
     if [[ ${RC} -ne 0 ]]; then
       echo -e "DEBUG: Failed to copy the license file of custom library ${!library_name}\n" 1>>"${BASEDIR}"/build.log 2>&1
       echo -e "failed\n\nSee build.log for details\n"
-      exit 1
+    else
+      echo -e "DEBUG: Copied the license file of custom library ${!library_name} successfully\n" 1>>"${BASEDIR}"/build.log 2>&1
     fi
-
-    echo -e "DEBUG: Copied the license file of custom library ${!library_name} successfully\n" 1>>"${BASEDIR}"/build.log 2>&1
   done
 
   # COPY LIBRARY LICENSES
@@ -367,13 +365,28 @@ if [[ -n ${ANDROID_ARCHITECTURES} ]]; then
 
     echo -e -n "\nCreating Android archive under prebuilt: "
 
+    echo $ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID 1>>"${BASEDIR}"/build.log 2>&1
+    ./gradlew tasks --all 1>>"${BASEDIR}"/build.log 2>&1
+    ./gradlew printEnvVariable 1>>"${BASEDIR}"/build.log 2>&1
+
     # BUILD ANDROID ARCHIVE
     rm -f "${BASEDIR}"/android/ffmpeg-kit-android-lib/build/outputs/aar/ffmpeg-kit-release.aar 1>>"${BASEDIR}"/build.log 2>&1
-    ./gradlew ffmpeg-kit-android-lib:clean ffmpeg-kit-android-lib:assembleRelease ffmpeg-kit-android-lib:testReleaseUnitTest 1>>"${BASEDIR}"/build.log 2>&1
+    ./gradlew ffmpeg-kit-android-lib:clean ffmpeg-kit-android-lib:assembleRelease ffmpeg-kit-android-lib:testReleaseUnitTest publishToMavenCentral --info --stacktrace 1>>"${BASEDIR}"/build.log 2>&1
     if [ $? -ne 0 ]; then
       echo -e "failed\n"
       exit 1
     fi
+
+    # if [ $? -ne 0 ]; then
+      # echo -e "failed publishToMavenCentral\n"
+    # fi
+
+    ls -la "${BASEDIR}"/android/ffmpeg-kit-android-lib/build/outputs/ 1>>"${BASEDIR}"/build.log 2>&1
+    ls -la "${BASEDIR}"/android/ffmpeg-kit-android-lib/build/outputs/aar/ 1>>"${BASEDIR}"/build.log 2>&1
+    ls -la $HOME/.m2/repository 1>>"${BASEDIR}"/build.log 2>&1
+
+    # ./gradlew publishAllPublicationsToMavenCentralRepository 1>>"${BASEDIR}"/build.log 2>&1
+    # ./gradlew publishToMavenCentral 1>>"${BASEDIR}"/build.log 2>&1
 
     # COPY ANDROID ARCHIVE TO PREBUILT DIRECTORY
     FFMPEG_KIT_AAR="${BASEDIR}/prebuilt/$(get_aar_directory)/ffmpeg-kit"

@@ -4,8 +4,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.0'
+        classpath 'com.android.tools.build:gradle:8.7.3'
     }
+}
+
+plugins {
+    id "com.vanniktech.maven.publish" version "0.34.0" apply false
 }
 
 allprojects {
@@ -15,6 +19,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+task cleanb(type: Delete) {
     delete rootProject.buildDir
 }

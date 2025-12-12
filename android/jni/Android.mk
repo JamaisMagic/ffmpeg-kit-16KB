@@ -37,11 +37,9 @@ LOCAL_PATH := $(MY_LOCAL_PATH)/../ffmpeg-kit-android-lib/src/main/cpp
 # DEFINE ARCH FLAGS
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     MY_ARCH_FLAGS := ARM_V7A
-    ifeq ("$(shell test -e $(MY_LOCAL_PATH)/../build/.lts && echo lts)","lts")
-        MY_ARM_NEON := false
-    else
-        MY_ARM_NEON := true
-    endif
+    # NDK r25c and later (including r27) require NEON for all armeabi-v7a builds
+    # Always enable NEON to support newer NDK versions
+    MY_ARM_NEON := true
 endif
 ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
     MY_ARCH_FLAGS := ARM64_V8A
@@ -91,9 +89,9 @@ ifeq ($(MY_ARMV7_NEON), true)
     LOCAL_CFLAGS := $(MY_CFLAGS)
     LOCAL_LDLIBS := $(MY_LDLIBS)
     LOCAL_SHARED_LIBRARIES := libavcodec_neon libavfilter_neon libswscale_neon libavformat_neon libavutil_neon libswresample_neon libavdevice_neon
-    ifeq ($(APP_STL), c++_shared)
-        LOCAL_SHARED_LIBRARIES += c++_shared # otherwise NDK will not add the library for packaging
-    endif
+    # Note: In NDK r27+, when APP_STL := c++_shared is set in Application.mk,
+    # the NDK automatically handles c++_shared and includes it in packaging.
+    # No need to add it to LOCAL_SHARED_LIBRARIES.
     LOCAL_ARM_NEON := true
     include $(BUILD_SHARED_LIBRARY)
 
@@ -113,9 +111,9 @@ ifeq ($(MY_BUILD_GENERIC_FFMPEG_KIT), true)
     LOCAL_CFLAGS := $(MY_CFLAGS)
     LOCAL_LDLIBS := $(MY_LDLIBS)
     LOCAL_SHARED_LIBRARIES := libavfilter libavformat libavcodec libavutil libswresample libavdevice libswscale
-    ifeq ($(APP_STL), c++_shared)
-        LOCAL_SHARED_LIBRARIES += c++_shared # otherwise NDK will not add the library for packaging
-    endif
+    # Note: In NDK r27+, when APP_STL := c++_shared is set in Application.mk,
+    # the NDK automatically handles c++_shared and includes it in packaging.
+    # No need to add it to LOCAL_SHARED_LIBRARIES.
     LOCAL_ARM_NEON := ${MY_ARM_NEON}
     include $(BUILD_SHARED_LIBRARY)
 

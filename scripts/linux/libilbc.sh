@@ -24,6 +24,8 @@ cmake -Wno-dev \
   -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
   -DUNIX=1 \
   -DBUILD_SHARED_LIBS=0 \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
   "${BASEDIR}"/src/"${LIB_NAME}" || return 1
 
 make -j$(get_cpu_count) || return 1

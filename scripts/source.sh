@@ -33,7 +33,7 @@ get_library_source() {
     ;;
   ffmpeg)
     SOURCE_REPO_URL="https://github.com/arthenica/FFmpeg"
-    SOURCE_ID="n6.0"
+    SOURCE_ID="n6.0.1"
     SOURCE_TYPE="TAG"
     ;;
   fontconfig)
@@ -63,7 +63,7 @@ get_library_source() {
     ;;
   gnutls)
     SOURCE_REPO_URL="https://github.com/arthenica/gnutls"
-    SOURCE_ID="3.7.9"
+    SOURCE_ID="3.8.10"
     SOURCE_TYPE="TAG"
     ;;
   harfbuzz)
@@ -93,7 +93,7 @@ get_library_source() {
     ;;
   libaom)
     SOURCE_REPO_URL="https://github.com/arthenica/libaom"
-    SOURCE_ID="v3.6.1"
+    SOURCE_ID="v3.13.1"
     SOURCE_TYPE="TAG"
     ;;
   libass)
@@ -248,12 +248,12 @@ get_library_source() {
     ;;
   x264)
     SOURCE_REPO_URL="https://github.com/arthenica/x264"
-    SOURCE_ID="eaa68fad9e5d201d42fde51665f2d137ae96baf0"
+    SOURCE_ID="c24e06c2e184345ceb33eb20a15d1024d9fd3497"
     SOURCE_TYPE="COMMIT"
     ;;
   x265)
     SOURCE_REPO_URL="https://github.com/arthenica/x265"
-    SOURCE_ID="3.4"
+    SOURCE_ID="3.5"
     SOURCE_TYPE="TAG"
     ;;
   xvidcore)

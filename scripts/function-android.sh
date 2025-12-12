@@ -62,7 +62,7 @@ enable_lts_build() {
   export FFMPEG_KIT_LTS_BUILD="1"
 
   # LTS RELEASES USE API LEVEL 16 / Android 4.1 (JELLY BEAN)
-  export API=16
+  export API=23
 }
 
 build_application_mk() {
@@ -92,6 +92,8 @@ APP_PLATFORM := android-${API}
 APP_CFLAGS := -O3 -DANDROID ${LTS_BUILD_FLAG}${BUILD_DATE} -Wall -Wno-deprecated-declarations -Wno-pointer-sign -Wno-switch -Wno-unused-result -Wno-unused-variable
 
 APP_LDFLAGS := "-Wl,-z,max-page-size=16384,--hash-style=both"
+
+APP_SUPPORT_FLEXIBLE_PAGE_SIZES := true
 EOF
 }
 
@@ -1020,6 +1022,8 @@ android_ndk_cmake() {
     -H"${BASEDIR}"/src/"${LIB_NAME}" \
     -B"${BUILD_DIR}" \
     "${ASM_OPTIONS}" \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
     -DANDROID_PLATFORM=android-"${API}"
 }
 
