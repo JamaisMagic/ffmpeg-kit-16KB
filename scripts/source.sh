@@ -158,7 +158,7 @@ get_library_source() {
     ;;
   libwebp)
     SOURCE_REPO_URL="https://github.com/arthenica/libwebp"
-    SOURCE_ID="v1.3.1"
+    SOURCE_ID="v1.5.0"
     SOURCE_TYPE="TAG"
     ;;
   libxml2)
