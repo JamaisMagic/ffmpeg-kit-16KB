@@ -88,7 +88,7 @@ get_library_source() {
     ;;
   leptonica)
     SOURCE_REPO_URL="https://github.com/arthenica/leptonica"
-    SOURCE_ID="1.83.1"
+    SOURCE_ID="1.84.1"
     SOURCE_TYPE="TAG"
     ;;
   libaom)
