@@ -78,7 +78,7 @@ get_library_source() {
     ;;
   kvazaar)
     SOURCE_REPO_URL="https://github.com/arthenica/kvazaar"
-    SOURCE_ID="v2.2.0"
+    SOURCE_ID="v2.3.2"
     SOURCE_TYPE="TAG"
     ;;
   lame)
