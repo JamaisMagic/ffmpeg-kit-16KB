@@ -113,7 +113,7 @@ get_library_source() {
     ;;
   libogg)
     SOURCE_REPO_URL="https://github.com/arthenica/ogg"
-    SOURCE_ID="v1.3.5"
+    SOURCE_ID="v1.3.6"
     SOURCE_TYPE="TAG"
     ;;
   libpng)
