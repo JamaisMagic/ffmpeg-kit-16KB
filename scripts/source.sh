@@ -73,7 +73,7 @@ get_library_source() {
     ;;
   jpeg)
     SOURCE_REPO_URL="https://github.com/arthenica/libjpeg-turbo"
-    SOURCE_ID="3.0.0"
+    SOURCE_ID="3.1.3"
     SOURCE_TYPE="TAG"
     ;;
   kvazaar)
