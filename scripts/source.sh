@@ -223,7 +223,7 @@ get_library_source() {
     ;;
   srt)
     SOURCE_REPO_URL="https://github.com/arthenica/srt"
-    SOURCE_ID="v1.5.2"
+    SOURCE_ID="v1.5.4"
     SOURCE_TYPE="TAG"
     ;;
   tesseract)
