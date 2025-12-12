@@ -2,8 +2,15 @@
 
 # FIX HARD-CODED PATHS
 ${SED_INLINE} 's|git://git.savannah.gnu.org|https://github.com/arthenica|g' "${BASEDIR}"/src/"${LIB_NAME}"/.gitmodules || return 1
-ln -s -f $(which aclocal) ${BASEDIR}/.tmp/aclocal-1.16
-ln -s -f $(which automake) ${BASEDIR}/.tmp/automake-1.16
+
+# libiconv's build tooling looks for versioned Automake binaries (aclocal-1.17,
+# automake-1.17). GitHub runners only ship 1.16 today, so create shims pointing
+# to the available tools to avoid "aclocal-1.17: not found" failures.
+mkdir -p "${BASEDIR}"/.tmp
+ln -s -f "$(which aclocal)" "${BASEDIR}"/.tmp/aclocal-1.16
+ln -s -f "$(which automake)" "${BASEDIR}"/.tmp/automake-1.16
+ln -s -f "$(which aclocal)" "${BASEDIR}"/.tmp/aclocal-1.17
+ln -s -f "$(which automake)" "${BASEDIR}"/.tmp/automake-1.17
 PATH="${BASEDIR}/.tmp":$PATH
 
 if [[ ! -d "${BASEDIR}"/src/"${LIB_NAME}"/gnulib ]]; then
