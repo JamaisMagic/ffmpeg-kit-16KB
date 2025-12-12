@@ -23,7 +23,7 @@ get_library_source() {
     ;;
   dav1d)
     SOURCE_REPO_URL="https://github.com/arthenica/dav1d"
-    SOURCE_ID="1.2.1"
+    SOURCE_ID="1.4.3"
     SOURCE_TYPE="TAG"
     ;;
   expat)
