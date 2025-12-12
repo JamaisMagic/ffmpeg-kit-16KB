@@ -153,7 +153,7 @@ get_library_source() {
     ;;
   libvpx)
     SOURCE_REPO_URL="https://github.com/arthenica/libvpx"
-    SOURCE_ID="v1.13.0"
+    SOURCE_ID="v1.14.1"
     SOURCE_TYPE="TAG"
     ;;
   libwebp)
