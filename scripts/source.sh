@@ -13,7 +13,7 @@ get_library_source() {
     ;;
   chromaprint)
     SOURCE_REPO_URL="https://github.com/arthenica/chromaprint"
-    SOURCE_ID="v1.5.1"
+    SOURCE_ID="v1.6.0"
     SOURCE_TYPE="TAG"
     ;;
   cpu-features)
