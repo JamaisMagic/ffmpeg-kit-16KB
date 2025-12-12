@@ -163,7 +163,7 @@ get_library_source() {
     ;;
   libxml2)
     SOURCE_REPO_URL="https://github.com/arthenica/libxml2"
-    SOURCE_ID="v2.11.4"
+    SOURCE_ID="v2.12.10"
     SOURCE_TYPE="TAG"
     ;;
   nettle)
