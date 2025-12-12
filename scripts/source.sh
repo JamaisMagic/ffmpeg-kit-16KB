@@ -48,7 +48,7 @@ get_library_source() {
     ;;
   fribidi)
     SOURCE_REPO_URL="https://github.com/arthenica/fribidi"
-    SOURCE_ID="v1.0.13"
+    SOURCE_ID="v1.0.16"
     SOURCE_TYPE="TAG"
     ;;
   giflib)
