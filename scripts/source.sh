@@ -178,7 +178,7 @@ get_library_source() {
     ;;
   openh264)
     SOURCE_REPO_URL="https://github.com/arthenica/openh264"
-    SOURCE_ID="v2.3.1"
+    SOURCE_ID="v2.5.1"
     SOURCE_TYPE="TAG"
     ;;
   openssl)
