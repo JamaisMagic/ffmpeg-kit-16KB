@@ -98,7 +98,7 @@ get_library_source() {
     ;;
   libass)
     SOURCE_REPO_URL="https://github.com/arthenica/libass"
-    SOURCE_ID="0.17.1"
+    SOURCE_ID="0.17.4"
     SOURCE_TYPE="TAG"
     ;;
   libiconv)
