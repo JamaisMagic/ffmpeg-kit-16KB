@@ -168,7 +168,7 @@ get_library_source() {
     ;;
   nettle)
     SOURCE_REPO_URL="https://github.com/arthenica/nettle"
-    SOURCE_ID="nettle_3.8.1_release_20220727"
+    SOURCE_ID="nettle_3.10.2_release_20250626"
     SOURCE_TYPE="TAG"
     ;;
   opencore-amr)
