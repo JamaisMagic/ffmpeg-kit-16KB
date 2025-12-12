@@ -198,7 +198,7 @@ get_library_source() {
     ;;
   sdl)
     SOURCE_REPO_URL="https://github.com/arthenica/SDL"
-    SOURCE_ID="release-2.0.8"
+    SOURCE_ID="release-2.24.2"
     SOURCE_TYPE="TAG"
     ;;
   shine)
