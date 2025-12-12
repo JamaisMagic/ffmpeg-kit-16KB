@@ -103,7 +103,7 @@ get_library_source() {
     ;;
   libiconv)
     SOURCE_REPO_URL="https://github.com/arthenica/libiconv"
-    SOURCE_ID="v1.17"
+    SOURCE_ID="v1.18"
     SOURCE_TYPE="TAG"
     ;;
   libilbc)
