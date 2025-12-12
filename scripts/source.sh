@@ -263,7 +263,7 @@ get_library_source() {
     ;;
   zimg)
     SOURCE_REPO_URL="https://github.com/arthenica/zimg"
-    SOURCE_ID="release-3.0.5"
+    SOURCE_ID="release-3.0.6"
     SOURCE_TYPE="TAG"
     ;;
   esac
