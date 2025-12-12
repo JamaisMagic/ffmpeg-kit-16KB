@@ -228,7 +228,7 @@ get_library_source() {
     ;;
   tesseract)
     SOURCE_REPO_URL="https://github.com/arthenica/tesseract"
-    SOURCE_ID="5.3.2"
+    SOURCE_ID="5.3.4"
     SOURCE_TYPE="TAG"
     ;;
   tiff)
