@@ -28,7 +28,7 @@ get_library_source() {
     ;;
   expat)
     SOURCE_REPO_URL="https://github.com/arthenica/libexpat"
-    SOURCE_ID="R_2_5_0"
+    SOURCE_ID="R_2_7_3"
     SOURCE_TYPE="TAG"
     ;;
   ffmpeg)
