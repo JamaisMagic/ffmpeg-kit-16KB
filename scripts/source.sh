@@ -38,7 +38,7 @@ get_library_source() {
     ;;
   fontconfig)
     SOURCE_REPO_URL="https://github.com/arthenica/fontconfig"
-    SOURCE_ID="2.14.2"
+    SOURCE_ID="2.16.2"
     SOURCE_TYPE="TAG"
     ;;
   freetype)
