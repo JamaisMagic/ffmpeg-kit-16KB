@@ -54,4 +54,4 @@ make -j$(get_cpu_count) || return 1
 make install || return 1
 
 # CREATE PACKAGE CONFIG MANUALLY
-create_x265_package_config "3.5" || return 1
+create_x265_package_config "3.6" || return 1

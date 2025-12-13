@@ -13,32 +13,32 @@ get_library_source() {
     ;;
   chromaprint)
     SOURCE_REPO_URL="https://github.com/arthenica/chromaprint"
-    SOURCE_ID="v1.5.1"
+    SOURCE_ID="v1.6.0"
     SOURCE_TYPE="TAG"
     ;;
   cpu-features)
     SOURCE_REPO_URL="https://github.com/arthenica/cpu_features"
-    SOURCE_ID="v0.8.0"
+    SOURCE_ID="v0.10.1"
     SOURCE_TYPE="TAG"
     ;;
   dav1d)
     SOURCE_REPO_URL="https://github.com/arthenica/dav1d"
-    SOURCE_ID="1.2.1"
+    SOURCE_ID="1.4.3"
     SOURCE_TYPE="TAG"
     ;;
   expat)
     SOURCE_REPO_URL="https://github.com/arthenica/libexpat"
-    SOURCE_ID="R_2_5_0"
+    SOURCE_ID="R_2_7_3"
     SOURCE_TYPE="TAG"
     ;;
   ffmpeg)
     SOURCE_REPO_URL="https://github.com/arthenica/FFmpeg"
-    SOURCE_ID="n6.0.1"
+    SOURCE_ID="n6.1.4"
     SOURCE_TYPE="TAG"
     ;;
   fontconfig)
     SOURCE_REPO_URL="https://github.com/arthenica/fontconfig"
-    SOURCE_ID="2.14.2"
+    SOURCE_ID="2.16.2"
     SOURCE_TYPE="TAG"
     ;;
   freetype)
@@ -48,12 +48,12 @@ get_library_source() {
     ;;
   fribidi)
     SOURCE_REPO_URL="https://github.com/arthenica/fribidi"
-    SOURCE_ID="v1.0.13"
+    SOURCE_ID="v1.0.16"
     SOURCE_TYPE="TAG"
     ;;
   giflib)
     SOURCE_REPO_URL="https://github.com/arthenica/giflib"
-    SOURCE_ID="5.2.1"
+    SOURCE_ID="5.2.2"
     SOURCE_TYPE="TAG"
     ;;
   gmp)
@@ -68,17 +68,17 @@ get_library_source() {
     ;;
   harfbuzz)
     SOURCE_REPO_URL="https://github.com/arthenica/harfbuzz"
-    SOURCE_ID="8.0.1"
+    SOURCE_ID="8.5.0"
     SOURCE_TYPE="TAG"
     ;;
   jpeg)
     SOURCE_REPO_URL="https://github.com/arthenica/libjpeg-turbo"
-    SOURCE_ID="3.0.0"
+    SOURCE_ID="3.1.3"
     SOURCE_TYPE="TAG"
     ;;
   kvazaar)
     SOURCE_REPO_URL="https://github.com/arthenica/kvazaar"
-    SOURCE_ID="v2.2.0"
+    SOURCE_ID="v2.3.2"
     SOURCE_TYPE="TAG"
     ;;
   lame)
@@ -88,7 +88,7 @@ get_library_source() {
     ;;
   leptonica)
     SOURCE_REPO_URL="https://github.com/arthenica/leptonica"
-    SOURCE_ID="1.83.1"
+    SOURCE_ID="1.84.1"
     SOURCE_TYPE="TAG"
     ;;
   libaom)
@@ -98,7 +98,7 @@ get_library_source() {
     ;;
   libass)
     SOURCE_REPO_URL="https://github.com/arthenica/libass"
-    SOURCE_ID="0.17.1"
+    SOURCE_ID="0.17.4"
     SOURCE_TYPE="TAG"
     ;;
   libiconv)
@@ -113,12 +113,12 @@ get_library_source() {
     ;;
   libogg)
     SOURCE_REPO_URL="https://github.com/arthenica/ogg"
-    SOURCE_ID="v1.3.5"
+    SOURCE_ID="v1.3.6"
     SOURCE_TYPE="TAG"
     ;;
   libpng)
     SOURCE_REPO_URL="https://github.com/arthenica/libpng"
-    SOURCE_ID="v1.6.40"
+    SOURCE_ID="v1.6.53"
     SOURCE_TYPE="TAG"
     ;;
   libsamplerate)
@@ -128,12 +128,12 @@ get_library_source() {
     ;;
   libsndfile)
     SOURCE_REPO_URL="https://github.com/arthenica/libsndfile"
-    SOURCE_ID="1.2.0"
+    SOURCE_ID="1.2.2"
     SOURCE_TYPE="TAG"
     ;;
   libtheora)
     SOURCE_REPO_URL="https://github.com/arthenica/theora"
-    SOURCE_ID="v1.1.1"
+    SOURCE_ID="v1.2.0"
     SOURCE_TYPE="TAG"
     ;;
   libuuid)
@@ -153,22 +153,22 @@ get_library_source() {
     ;;
   libvpx)
     SOURCE_REPO_URL="https://github.com/arthenica/libvpx"
-    SOURCE_ID="v1.13.0"
+    SOURCE_ID="v1.14.1"
     SOURCE_TYPE="TAG"
     ;;
   libwebp)
     SOURCE_REPO_URL="https://github.com/arthenica/libwebp"
-    SOURCE_ID="v1.3.1"
+    SOURCE_ID="v1.5.0"
     SOURCE_TYPE="TAG"
     ;;
   libxml2)
     SOURCE_REPO_URL="https://github.com/arthenica/libxml2"
-    SOURCE_ID="v2.11.4"
+    SOURCE_ID="v2.12.10"
     SOURCE_TYPE="TAG"
     ;;
   nettle)
     SOURCE_REPO_URL="https://github.com/arthenica/nettle"
-    SOURCE_ID="nettle_3.8.1_release_20220727"
+    SOURCE_ID="nettle_3.10.2_release_20250626"
     SOURCE_TYPE="TAG"
     ;;
   opencore-amr)
@@ -178,7 +178,7 @@ get_library_source() {
     ;;
   openh264)
     SOURCE_REPO_URL="https://github.com/arthenica/openh264"
-    SOURCE_ID="v2.3.1"
+    SOURCE_ID="v2.5.1"
     SOURCE_TYPE="TAG"
     ;;
   openssl)
@@ -188,17 +188,17 @@ get_library_source() {
     ;;
   opus)
     SOURCE_REPO_URL="https://github.com/arthenica/opus"
-    SOURCE_ID="v1.4"
+    SOURCE_ID="v1.5.2"
     SOURCE_TYPE="TAG"
     ;;
   rubberband)
     SOURCE_REPO_URL="https://github.com/arthenica/rubberband"
-    SOURCE_ID="v1.8.2"
+    SOURCE_ID="v1.9.2"
     SOURCE_TYPE="TAG"
     ;;
   sdl)
     SOURCE_REPO_URL="https://github.com/arthenica/SDL"
-    SOURCE_ID="release-2.0.8"
+    SOURCE_ID="release-2.24.2"
     SOURCE_TYPE="TAG"
     ;;
   shine)
@@ -208,7 +208,7 @@ get_library_source() {
     ;;
   snappy)
     SOURCE_REPO_URL="https://github.com/arthenica/snappy"
-    SOURCE_ID="1.1.9"
+    SOURCE_ID="1.2.2"
     SOURCE_TYPE="TAG"
     ;;
   soxr)
@@ -223,12 +223,12 @@ get_library_source() {
     ;;
   srt)
     SOURCE_REPO_URL="https://github.com/arthenica/srt"
-    SOURCE_ID="v1.5.2"
+    SOURCE_ID="v1.5.4"
     SOURCE_TYPE="TAG"
     ;;
   tesseract)
     SOURCE_REPO_URL="https://github.com/arthenica/tesseract"
-    SOURCE_ID="5.3.2"
+    SOURCE_ID="5.3.4"
     SOURCE_TYPE="TAG"
     ;;
   tiff)
@@ -253,7 +253,7 @@ get_library_source() {
     ;;
   x265)
     SOURCE_REPO_URL="https://github.com/arthenica/x265"
-    SOURCE_ID="3.5"
+    SOURCE_ID="3.6"
     SOURCE_TYPE="TAG"
     ;;
   xvidcore)
@@ -263,7 +263,7 @@ get_library_source() {
     ;;
   zimg)
     SOURCE_REPO_URL="https://github.com/arthenica/zimg"
-    SOURCE_ID="release-3.0.5"
+    SOURCE_ID="release-3.0.6"
     SOURCE_TYPE="TAG"
     ;;
   esac
