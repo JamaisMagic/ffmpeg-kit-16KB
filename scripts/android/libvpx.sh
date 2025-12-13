@@ -63,6 +63,9 @@ esac
 # ALWAYS CLEAN THE PREVIOUS BUILD
 make distclean 2>/dev/null 1>/dev/null
 
+# Ensure we rebuild freshly so new CPU flags (e.g., dotprod) take effect.
+rm -rf "${LIB_INSTALL_PREFIX}" 1>/dev/null 2>&1
+
 # NOTE THAT RECONFIGURE IS NOT SUPPORTED
 
 # WORKAROUND TO FIX BUILD OPTIONS DEFINED IN configure.sh
@@ -82,6 +85,7 @@ overwrite_file "${BASEDIR}"/tools/patch/make/libvpx/configure.sh "${BASEDIR}"/sr
   --enable-better-hw-compatibility \
   --enable-runtime-cpu-detect \
   --enable-vp9-highbitdepth \
+  --enable-neon-dotprod \
   ${ASM_OPTIONS} \
   --enable-vp8 \
   --enable-vp9 \
