@@ -47,7 +47,7 @@ arm-v7a-neon)
 arm64-v8a)
   # NEON IS ENABLED BY --enable-runtime-cpu-detect
   TARGET_CPU="arm64"
-  ASM_OPTIONS="--disable-neon-dotprod"
+  ASM_OPTIONS="--disable-neon-dotprod --disable-neon-i8mm"
   export ASFLAGS="-c"
   ;;
 *)
