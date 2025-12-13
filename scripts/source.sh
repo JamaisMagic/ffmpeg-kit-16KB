@@ -118,7 +118,7 @@ get_library_source() {
     ;;
   libpng)
     SOURCE_REPO_URL="https://github.com/arthenica/libpng"
-    SOURCE_ID="v1.6.53"
+    SOURCE_ID="v1.6.51"
     SOURCE_TYPE="TAG"
     ;;
   libsamplerate)
