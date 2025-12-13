@@ -24,7 +24,6 @@ cmake -Wno-dev \
   -DHAVE_LIBLZO2=0 \
   -DHAVE_LIBZ=1 \
   -DCMAKE_SYSTEM_PROCESSOR=$(get_cmake_system_processor) \
-  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
   -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON \
   -DBUILD_SHARED_LIBS=0 "${BASEDIR}"/src/"${LIB_NAME}" || return 1
 
@@ -33,4 +32,4 @@ make -j$(get_cpu_count) || return 1
 make install || return 1
 
 # CREATE PACKAGE CONFIG MANUALLY
-create_snappy_package_config "1.1.9" || return 1
+create_snappy_package_config "1.2.2" || return 1

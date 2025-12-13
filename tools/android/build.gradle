@@ -13,8 +13,8 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 35
-        versionCode 60005
-        versionName "6.0.5"
+        versionCode 60104
+        versionName "6.1.4"
         project.archivesBaseName = "ffmpeg-kit"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -72,7 +72,7 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates("io.github.jamaismagic.ffmpeg", "ffmpeg-kit-main-16kb", "6.0.5")
+    coordinates("io.github.jamaismagic.ffmpeg", "ffmpeg-kit-main-16kb", "6.1.4")
 
     pom {
         name = "FFMPEG Android 16KB"

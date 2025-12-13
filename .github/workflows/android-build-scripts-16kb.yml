@@ -21,13 +21,13 @@ jobs:
       - name: set up build tools
         run: |
           sudo apt update && sudo apt -y install build-essential gperf groff meson autoconf automake autogen gnulib gettext gtk-doc-tools gnutls-bin libgnutls28-dev libssl-dev
-          sudo apt install -y dash git-core autoconf libtool gettext autopoint libavutil-dev libv4l-dev
-          sudo apt install -y automake python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
-          sudo apt install -y libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk gperf
-          sudo apt install -y libtss2-dev libunbound-dev dns-root-data bison gtk-doc-tools
+          sudo apt install -y dash git-core libtool autopoint libavutil-dev libv4l-dev
+          sudo apt install -y python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
+          sudo apt install -y libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk
+          sudo apt install -y libtss2-dev libunbound-dev dns-root-data bison
           sudo apt install -y texinfo texlive texlive-plain-generic texlive-extra-utils
           sudo apt install -y libfreetype6-dev libglib2.0-dev libcairo2-dev ragel
-          sudo apt install -y pkg-config nasm yasm libunistring-dev ninja-build
+          sudo apt install -y pkg-config nasm yasm ninja-build
           sudo apt install -y --reinstall gcc-14
           sudo ln -s -f /usr/bin/gcc-14 /usr/bin/gcc
           export OPENSSL_ROOT_DIR=/usr/include/openssl
@@ -57,7 +57,7 @@ jobs:
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
         # run: ./android.sh -d --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
-        run: ./android.sh --disable-arm-v7a --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvpx --enable-x264 --enable-x265
+        run: ./android.sh --disable-arm-v7a --disable-lib-openssl --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvpx --enable-x264 --enable-x265
       - name: prepare and upload main aar
         run: |
           AAR_PATH=$(find prebuilt -type f -name 'ffmpeg-kit.aar')
@@ -95,13 +95,13 @@ jobs:
       - name: set up build tools
         run: |
           sudo apt update && sudo apt -y install build-essential gperf groff meson autoconf automake autogen gnulib gettext gtk-doc-tools gnutls-bin libgnutls28-dev libssl-dev
-          sudo apt install -y dash git-core autoconf libtool gettext autopoint libavutil-dev libv4l-dev
-          sudo apt install -y automake python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
-          sudo apt install -y libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk gperf
-          sudo apt install -y libtss2-dev libunbound-dev dns-root-data bison gtk-doc-tools
+          sudo apt install -y dash git-core libtool autopoint libavutil-dev libv4l-dev
+          sudo apt install -y python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
+          sudo apt install -y libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk
+          sudo apt install -y libtss2-dev libunbound-dev dns-root-data bison
           sudo apt install -y texinfo texlive texlive-plain-generic texlive-extra-utils
           sudo apt install -y libfreetype6-dev libglib2.0-dev libcairo2-dev ragel
-          sudo apt install -y pkg-config nasm yasm libunistring-dev ninja-build
+          sudo apt install -y pkg-config nasm yasm ninja-build
           sudo apt install -y --reinstall gcc-14
           sudo ln -s -f /usr/bin/gcc-14 /usr/bin/gcc
           export OPENSSL_ROOT_DIR=/usr/include/openssl
@@ -131,7 +131,7 @@ jobs:
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
         # run: ./android.sh -d --lts --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
-        run: ./android.sh --lts --disable-arm-v7a --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvpx --enable-x264 --enable-x265
+        run: ./android.sh --lts --disable-arm-v7a --disable-lib-openssl --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvpx --enable-x264 --enable-x265
       - name: prepare and upload lts aar
         run: |
           AAR_PATH=$(find prebuilt -type f -name 'ffmpeg-kit.aar')
