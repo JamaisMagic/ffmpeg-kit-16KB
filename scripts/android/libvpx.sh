@@ -51,7 +51,7 @@ arm64-v8a)
   # expected by its rtcd tables on FFmpeg 6.1+ (VP9 uses NEON dotprod paths).
   export CFLAGS="${CFLAGS} -march=armv8.2-a+dotprod"
   export CXXFLAGS="${CXXFLAGS} -march=armv8.2-a+dotprod"
-  export ASFLAGS="-c"
+  export ASFLAGS="-c -march=armv8.2-a+dotprod"
   ;;
 *)
   # INTEL CPU EXTENSIONS ENABLED BY --enable-runtime-cpu-detect
