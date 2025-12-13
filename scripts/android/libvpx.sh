@@ -47,6 +47,10 @@ arm-v7a-neon)
 arm64-v8a)
   # NEON IS ENABLED BY --enable-runtime-cpu-detect
   TARGET_CPU="arm64"
+  # Ensure dotproduct intrinsics are available so libvpx builds the symbols
+  # expected by its rtcd tables on FFmpeg 6.1+ (VP9 uses NEON dotprod paths).
+  export CFLAGS="${CFLAGS} -march=armv8.2-a+dotprod"
+  export CXXFLAGS="${CXXFLAGS} -march=armv8.2-a+dotprod"
   export ASFLAGS="-c"
   ;;
 *)
