@@ -6,7 +6,6 @@ on:
 jobs:
   build-main-on-linux:
     name: android main on linux (ndk-r27-16k)
-    if: false
     runs-on: ubuntu-24.04
     defaults:
       run:
