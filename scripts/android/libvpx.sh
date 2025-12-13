@@ -47,11 +47,8 @@ arm-v7a-neon)
 arm64-v8a)
   # NEON IS ENABLED BY --enable-runtime-cpu-detect
   TARGET_CPU="arm64"
-  # Ensure dotproduct intrinsics are available so libvpx builds the symbols
-  # expected by its rtcd tables on FFmpeg 6.1+ (VP9 uses NEON dotprod paths).
-  export CFLAGS="${CFLAGS} -march=armv8.2-a+dotprod"
-  export CXXFLAGS="${CXXFLAGS} -march=armv8.2-a+dotprod"
-  export ASFLAGS="-c -march=armv8.2-a+dotprod"
+  ASM_OPTIONS="--disable-neon-dotprod"
+  export ASFLAGS="-c"
   ;;
 *)
   # INTEL CPU EXTENSIONS ENABLED BY --enable-runtime-cpu-detect
@@ -62,9 +59,6 @@ esac
 
 # ALWAYS CLEAN THE PREVIOUS BUILD
 make distclean 2>/dev/null 1>/dev/null
-
-# Ensure we rebuild freshly so new CPU flags (e.g., dotprod) take effect.
-rm -rf "${LIB_INSTALL_PREFIX}" 1>/dev/null 2>&1
 
 # NOTE THAT RECONFIGURE IS NOT SUPPORTED
 
@@ -85,7 +79,6 @@ overwrite_file "${BASEDIR}"/tools/patch/make/libvpx/configure.sh "${BASEDIR}"/sr
   --enable-better-hw-compatibility \
   --enable-runtime-cpu-detect \
   --enable-vp9-highbitdepth \
-  --enable-neon-dotprod \
   ${ASM_OPTIONS} \
   --enable-vp8 \
   --enable-vp9 \
