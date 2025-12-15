@@ -5,11 +5,18 @@ Google request developers to build new with new r27 and r28 ndk but ffmpeg-kit h
 
 </p>
 This fork has been updated to use NDK r27d which supports 16KB page sizes.
-The main build now uses NDK r27d and includes all necessary modifications for 16KB page size support.<br/>
+The main build and lts build now uses NDK r27d and includes all necessary modifications for 16KB page size support.<br/>
+But the min sdk level of the lts build is upgraded from 19 to 23(Android 6.0)
 NDK r27d: <a href="https://developer.android.com/ndk/downloads">Official Download</a>
 </p>
 You can find all details related to this update here. https://developer.android.com/guide/practices/page-sizes
 </br>
+
+### Why upgrade to ndk r27?
+The repo being forked from use ndk r23 for lts build and ndk r25 for main build. It should work fine, but when you enable some third party libraries, the file "libc++_shared.so" does not support 16KB. The upgrading the ndk r27 solve this issue.
+
+### Why upgrade the min sdk level of lts build to 23
+From ndk r25, it does not support armeabi-v7a without neon and Android 6.0(api 23) required neon in armeabi-v7a.
 
 # FFmpegKit ![GitHub release](https://img.shields.io/badge/release-v6.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/com.arthenica/ffmpeg-kit-min) ![CocoaPods](https://img.shields.io/cocoapods/v/ffmpeg-kit-ios-min) ![pub](https://img.shields.io/pub/v/ffmpeg_kit_flutter.svg) ![npm](https://img.shields.io/npm/v/ffmpeg-kit-react-native.svg)
 
