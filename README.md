@@ -5,15 +5,15 @@ Google request developers to build new with new r27 and r28 ndk but ffmpeg-kit h
 
 </p>
 This fork has been updated to use NDK r27d which supports 16KB page sizes.
-The main build and lts build now uses NDK r27d and includes all necessary modifications for 16KB page size support.<br/>
-But the min sdk level of the lts build is upgraded from 19 to 23(Android 6.0)
+The main build and lts build now use NDK r27d and include all necessary modifications for 16KB page size support.<br/>
+The min sdk level of the lts build is upgraded from 16 to 23(Android 6.0)<br/>
 NDK r27d: <a href="https://developer.android.com/ndk/downloads">Official Download</a>
 </p>
 You can find all details related to this update here. https://developer.android.com/guide/practices/page-sizes
 </br>
 
 ### Why upgrade to ndk r27?
-The repo being forked from use ndk r23 for lts build and ndk r25 for main build. It should work fine, but when you enable some third party libraries, the file "libc++_shared.so" does not support 16KB. The upgrading the ndk r27 solve this issue.
+The repo being forked from use ndk r23 for lts build and ndk r25 for main build. It should work fine, but when you enable some third party libraries, the file "libc++_shared.so" does not support 16KB. The upgrading to the ndk r27 solve this issue.
 
 ### Why upgrade the min sdk level of lts build to 23
 From ndk r25, it does not support armeabi-v7a without neon and Android 6.0(api 23) required neon in armeabi-v7a.
