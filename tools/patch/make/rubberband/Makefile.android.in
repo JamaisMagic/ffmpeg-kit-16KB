@@ -77,6 +77,7 @@ LIBRARY_INCLUDES := \
 	src/system/Allocators.h \
 	src/system/Thread.h \
 	src/system/VectorOps.h \
+	src/system/VectorOpsComplex.h \
 	src/system/sysutils.h
 
 LIBRARY_SOURCES := \
@@ -97,6 +98,7 @@ LIBRARY_SOURCES := \
 	src/system/Allocators.cpp \
 	src/system/sysutils.cpp \
 	src/system/Thread.cpp \
+	src/system/VectorOpsComplex.cpp \
 	src/StretcherChannelData.cpp \
 	src/StretcherImpl.cpp
 
