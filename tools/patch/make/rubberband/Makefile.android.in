@@ -82,7 +82,6 @@ LIBRARY_INCLUDES := \
 LIBRARY_SOURCES := \
 	src/rubberband-c.cpp \
 	src/RubberBandStretcher.cpp \
-	src/StretcherProcess.cpp \
 	src/StretchCalculator.cpp \
 	src/base/Profiler.cpp \
 	src/dsp/AudioCurveCalculator.cpp \
