@@ -57,7 +57,6 @@ PUBLIC_INCLUDES := \
 LIBRARY_INCLUDES := \
 	src/StretcherChannelData.h \
 	src/float_cast/float_cast.h \
-	src/StretcherImpl.h \
 	src/StretchCalculator.h \
 	src/base/Profiler.h \
 	src/base/RingBuffer.h \
@@ -179,7 +178,6 @@ depend:
 
 src/rubberband-c.o: rubberband/rubberband-c.h
 src/rubberband-c.o: rubberband/RubberBandStretcher.h
-src/RubberBandStretcher.o: src/StretcherImpl.h
 src/RubberBandStretcher.o: rubberband/RubberBandStretcher.h src/dsp/Window.h
 src/RubberBandStretcher.o: src/dsp/SincWindow.h src/dsp/FFT.h
 src/RubberBandStretcher.o: src/audiocurves/CompoundAudioCurve.h
@@ -189,7 +187,7 @@ src/RubberBandStretcher.o: src/audiocurves/HighFrequencyAudioCurve.h
 src/RubberBandStretcher.o: src/dsp/SampleFilter.h src/base/RingBuffer.h
 src/RubberBandStretcher.o: src/base/Scavenger.h src/system/Thread.h
 src/RubberBandStretcher.o: src/system/sysutils.h
-src/StretcherProcess.o: src/StretcherImpl.h rubberband/RubberBandStretcher.h
+src/StretcherProcess.o: rubberband/RubberBandStretcher.h
 src/StretcherProcess.o: src/dsp/Window.h src/dsp/SincWindow.h src/dsp/FFT.h
 src/StretcherProcess.o: src/audiocurves/CompoundAudioCurve.h
 src/StretcherProcess.o: src/dsp/AudioCurveCalculator.h
@@ -235,7 +233,7 @@ src/system/Allocators.o: src/system/Allocators.h src/system/VectorOps.h
 src/system/Allocators.o: src/system/sysutils.h
 src/system/sysutils.o: src/system/sysutils.h
 src/system/Thread.o: src/system/Thread.h
-src/StretcherChannelData.o: src/StretcherChannelData.h src/StretcherImpl.h
+src/StretcherChannelData.o: src/StretcherChannelData.h
 src/StretcherChannelData.o: rubberband/RubberBandStretcher.h src/dsp/Window.h
 src/StretcherChannelData.o: src/dsp/SincWindow.h src/dsp/FFT.h
 src/StretcherChannelData.o: src/audiocurves/CompoundAudioCurve.h
@@ -247,7 +245,7 @@ src/StretcherChannelData.o: src/base/Scavenger.h src/system/Thread.h
 src/StretcherChannelData.o: src/system/sysutils.h src/dsp/Resampler.h
 src/StretcherChannelData.o: src/system/Allocators.h src/system/VectorOps.h
 src/StretcherChannelData.o: src/system/sysutils.h
-src/StretcherImpl.o: src/StretcherImpl.h rubberband/RubberBandStretcher.h
+src/StretcherImpl.o: rubberband/RubberBandStretcher.h
 src/StretcherImpl.o: src/dsp/Window.h src/dsp/SincWindow.h src/dsp/FFT.h
 src/StretcherImpl.o: src/audiocurves/CompoundAudioCurve.h
 src/StretcherImpl.o: src/dsp/AudioCurveCalculator.h
