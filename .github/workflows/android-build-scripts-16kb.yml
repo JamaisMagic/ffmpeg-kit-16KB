@@ -8,6 +8,7 @@ jobs:
     if: false
     name: android main on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
+    timeout-minutes: 1440
     defaults:
       run:
         shell: bash
@@ -82,6 +83,7 @@ jobs:
   build-lts-on-linux:
     name: android lts on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
+    timeout-minutes: 1440
     defaults:
       run:
         shell: bash
