@@ -340,6 +340,12 @@ fi
 
 export LDFLAGS+=" -L${ANDROID_NDK_ROOT}/platforms/android-${API}/arch-${TOOLCHAIN_ARCH}/usr/lib"
 
+# Remove the host library path from LDFLAGS to prevent linking against x86_64 libraries
+# The host library path contains x86_64 libraries that are incompatible with ARM targets
+# Match only the path ending with /toolchains/llvm/prebuilt/TOOLCHAIN/lib (without subdirectories)
+# This is the host library path, not the ARM-specific paths like .../arm-linux-androideabi/lib or .../sysroot/...
+export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-L[^ ]*/toolchains/llvm/prebuilt/[^ /]+/lib([[:space:]]|$)||g")
+
 # LINKING WITH ANDROID LTS SUPPORT LIBRARY IS NECESSARY FOR API < 18
 if [[ -n ${FFMPEG_KIT_LTS_BUILD} ]] && [[ ${API} -lt 18 ]]; then
   export LDFLAGS+=" -Wl,--whole-archive ${BASEDIR}/android/ffmpeg-kit-android-lib/src/main/cpp/libandroidltssupport.a -Wl,--no-whole-archive"
