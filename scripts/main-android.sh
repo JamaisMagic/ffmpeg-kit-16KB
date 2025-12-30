@@ -67,6 +67,8 @@ fi
 
 # BUILD ENABLED LIBRARIES AND THEIR DEPENDENCIES
 let completed=0
+let previous_completed=0
+let no_progress_iterations=0
 while [ ${#enabled_library_list[@]} -gt $completed ]; do
   for library in "${enabled_library_list[@]}"; do
     let run=0
@@ -314,15 +316,53 @@ while [ ${#enabled_library_list[@]} -gt $completed ]; do
           fi
           ;;
         esac
-        # If dependencies are disabled, mark library as completed (it can never be built)
+        # If dependencies are disabled, check if library is already installed
+        # Only mark as completed if it's actually installed
+        # If not installed, we'll skip it but not mark as completed to avoid breaking dependent libraries
         if [[ $deps_missing -eq 1 ]]; then
-          ((completed += 1))
-          declare "$BUILD_COMPLETED_FLAG=1"
-          echo -e "INFO: Marking $library as completed (dependencies are disabled)\n" 1>>"${BASEDIR}"/build.log 2>&1
+          LIBRARY_IS_INSTALLED=$(library_is_installed "${LIB_INSTALL_BASE}" "${library}")
+          if [[ ${LIBRARY_IS_INSTALLED} -eq 1 ]]; then
+            # Library is already installed, mark as completed
+            ((completed += 1))
+            declare "$BUILD_COMPLETED_FLAG=1"
+            echo -e "INFO: Marking $library as completed (already installed, dependencies are disabled)\n" 1>>"${BASEDIR}"/build.log 2>&1
+          else
+            # Library is not installed and can't be built due to missing dependencies
+            # Don't mark as completed - this prevents dependent libraries from thinking the dependency is available
+            # The progress tracking below will handle infinite loop prevention
+            echo -e "INFO: Skipping $library (dependencies disabled, not installed, cannot be built)\n" 1>>"${BASEDIR}"/build.log 2>&1
+          fi
         fi
       fi
     fi
   done
+  # Check if we made progress in this iteration
+  if [[ $completed -eq $previous_completed ]]; then
+    ((no_progress_iterations++))
+    # If we've had multiple iterations with no progress, we need to break the loop
+    # Mark unbuildable libraries as completed (but don't set OK_* flag to avoid breaking dependencies)
+    if [[ $no_progress_iterations -gt ${#enabled_library_list[@]} ]]; then
+      echo -e "INFO: No progress detected after $no_progress_iterations iterations, marking unbuildable libraries\n" 1>>"${BASEDIR}"/build.log 2>&1
+      for library in "${enabled_library_list[@]}"; do
+        BUILD_COMPLETED_FLAG=$(echo "OK_${library}" | sed "s/\-/\_/g")
+        if [[ "${!BUILD_COMPLETED_FLAG}" != "1" ]]; then
+          LIBRARY_IS_INSTALLED=$(library_is_installed "${LIB_INSTALL_BASE}" "${library}")
+          if [[ ${LIBRARY_IS_INSTALLED} -ne 1 ]]; then
+            # Use a separate tracking variable instead of OK_* to avoid breaking dependencies
+            TRACK_COMPLETED_FLAG=$(echo "TRACK_${library}" | sed "s/\-/\_/g")
+            if [[ "${!TRACK_COMPLETED_FLAG}" != "1" ]]; then
+              declare "$TRACK_COMPLETED_FLAG=1"
+              ((completed += 1))
+              echo -e "INFO: Marking $library as tracked (cannot be built, no progress)\n" 1>>"${BASEDIR}"/build.log 2>&1
+            fi
+          fi
+        fi
+      done
+    fi
+  else
+    no_progress_iterations=0
+  fi
+  previous_completed=$completed
 done
 
 # BUILD CUSTOM LIBRARIES
