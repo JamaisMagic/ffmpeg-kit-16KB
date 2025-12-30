@@ -49,6 +49,17 @@ for library in {1..50}; do
   fi
 done
 
+# Helper function to check if a library is in the enabled list
+is_library_enabled() {
+  local lib_name=$1
+  for enabled_lib in "${enabled_library_list[@]}"; do
+    if [[ "$enabled_lib" == "$lib_name" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 # BUILD LTS SUPPORT LIBRARY FOR API < 18
 if [[ -n ${FFMPEG_KIT_LTS_BUILD} ]] && [[ ${API} -lt 18 ]]; then
   build_android_lts_support
@@ -199,6 +210,117 @@ while [ ${#enabled_library_list[@]} -gt $completed ]; do
       fi
     else
       echo -e "INFO: Skipping $library, dependencies built=$run, already built=${!BUILD_COMPLETED_FLAG}\n" 1>>"${BASEDIR}"/build.log 2>&1
+      # If library is already built, increment completed to avoid infinite loop
+      if [[ "${!BUILD_COMPLETED_FLAG}" == "1" ]]; then
+        ((completed += 1))
+      # If dependencies are not met (run=0), check if dependencies are enabled
+      # If dependencies are disabled, mark library as completed (it can never be built)
+      elif [[ $run -eq 0 ]]; then
+        local deps_missing=0
+        case $library in
+        fontconfig)
+          if ! is_library_enabled "libuuid" || ! is_library_enabled "expat" || ! is_library_enabled "libiconv" || ! is_library_enabled "freetype"; then
+            deps_missing=1
+          fi
+          ;;
+        freetype)
+          if ! is_library_enabled "libpng"; then
+            deps_missing=1
+          fi
+          ;;
+        gnutls)
+          if ! is_library_enabled "nettle" || ! is_library_enabled "gmp" || ! is_library_enabled "libiconv"; then
+            deps_missing=1
+          fi
+          ;;
+        harfbuzz)
+          if ! is_library_enabled "fontconfig" || ! is_library_enabled "freetype"; then
+            deps_missing=1
+          fi
+          ;;
+        lame)
+          if ! is_library_enabled "libiconv"; then
+            deps_missing=1
+          fi
+          ;;
+        leptonica)
+          if ! is_library_enabled "giflib" || ! is_library_enabled "jpeg" || ! is_library_enabled "libpng" || ! is_library_enabled "tiff" || ! is_library_enabled "libwebp"; then
+            deps_missing=1
+          fi
+          ;;
+        libass)
+          if ! is_library_enabled "libuuid" || ! is_library_enabled "expat" || ! is_library_enabled "libiconv" || ! is_library_enabled "freetype" || ! is_library_enabled "fribidi" || ! is_library_enabled "fontconfig" || ! is_library_enabled "libpng" || ! is_library_enabled "harfbuzz"; then
+            deps_missing=1
+          fi
+          ;;
+        libtheora)
+          if ! is_library_enabled "libvorbis" || ! is_library_enabled "libogg"; then
+            deps_missing=1
+          fi
+          ;;
+        libvorbis)
+          if ! is_library_enabled "libogg"; then
+            deps_missing=1
+          fi
+          ;;
+        libvpx)
+          if ! is_library_enabled "cpu-features"; then
+            deps_missing=1
+          fi
+          ;;
+        libwebp)
+          if ! is_library_enabled "giflib" || ! is_library_enabled "jpeg" || ! is_library_enabled "libpng" || ! is_library_enabled "tiff"; then
+            deps_missing=1
+          fi
+          ;;
+        libxml2)
+          if ! is_library_enabled "libiconv"; then
+            deps_missing=1
+          fi
+          ;;
+        nettle)
+          if ! is_library_enabled "gmp"; then
+            deps_missing=1
+          fi
+          ;;
+        openh264)
+          if ! is_library_enabled "cpu-features"; then
+            deps_missing=1
+          fi
+          ;;
+        rubberband)
+          if ! is_library_enabled "libsndfile" || ! is_library_enabled "libsamplerate"; then
+            deps_missing=1
+          fi
+          ;;
+        srt)
+          if ! is_library_enabled "openssl"; then
+            deps_missing=1
+          fi
+          ;;
+        tesseract)
+          if ! is_library_enabled "leptonica"; then
+            deps_missing=1
+          fi
+          ;;
+        tiff)
+          if ! is_library_enabled "jpeg"; then
+            deps_missing=1
+          fi
+          ;;
+        twolame)
+          if ! is_library_enabled "libsndfile"; then
+            deps_missing=1
+          fi
+          ;;
+        esac
+        # If dependencies are disabled, mark library as completed (it can never be built)
+        if [[ $deps_missing -eq 1 ]]; then
+          ((completed += 1))
+          declare "$BUILD_COMPLETED_FLAG=1"
+          echo -e "INFO: Marking $library as completed (dependencies are disabled)\n" 1>>"${BASEDIR}"/build.log 2>&1
+        fi
+      fi
     fi
   done
 done
