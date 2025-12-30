@@ -112,6 +112,8 @@ for library in {0..61}; do
     gmp)
       CFLAGS+=" $(pkg-config --cflags gmp 2>>"${BASEDIR}"/build.log)"
       LDFLAGS+=" $(pkg-config --libs --static gmp 2>>"${BASEDIR}"/build.log)"
+      # Explicitly add gmp library path to ensure configure script can find it
+      LDFLAGS+=" -L${LIB_INSTALL_BASE}/gmp/lib"
       CONFIGURE_POSTFIX+=" --enable-gmp"
       ;;
     gnutls)
