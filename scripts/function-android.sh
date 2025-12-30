@@ -525,7 +525,7 @@ Name: chromaprint
 Description: Audio fingerprint library
 URL: http://acoustid.org/chromaprint
 Version: ${CHROMAPRINT_VERSION}
-Libs: -L\${libdir} -lchromaprint
+Libs: -L\${libdir} -lchromaprint -lstdc++ -lm
 Cflags: -I\${includedir}
 EOF
 }
