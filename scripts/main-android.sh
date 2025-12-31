@@ -218,7 +218,7 @@ while [ ${#enabled_library_list[@]} -gt $completed ]; do
       # If dependencies are not met (run=0), check if dependencies are enabled
       # If dependencies are disabled, mark library as completed (it can never be built)
       elif [[ $run -eq 0 ]]; then
-        local deps_missing=0
+        deps_missing=0
         case $library in
         fontconfig)
           if ! is_library_enabled "libuuid" || ! is_library_enabled "expat" || ! is_library_enabled "libiconv" || ! is_library_enabled "freetype"; then
