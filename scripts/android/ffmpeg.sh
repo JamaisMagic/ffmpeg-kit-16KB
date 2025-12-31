@@ -348,6 +348,10 @@ export LDFLAGS+=" -L${ANDROID_NDK_ROOT}/platforms/android-${API}/arch-${TOOLCHAI
 # This is the host library path, not the ARM-specific paths like .../arm-linux-androideabi/lib or .../sysroot/...
 export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-L[^ ]*/toolchains/llvm/prebuilt/[^ /]+/lib([[:space:]]|$)||g")
 
+# Remove -lpthread from LDFLAGS - on Android, pthread is part of libc and -pthread compiler flag is sufficient
+# The -lpthread linker flag doesn't exist on Android and causes linker errors
+export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-lpthread([[:space:]]|$)||g")
+
 # Ensure gmp library path is available if gmp is enabled (check if --enable-gmp is in CONFIGURE_POSTFIX)
 if [[ "${CONFIGURE_POSTFIX}" == *"--enable-gmp"* ]]; then
   export LDFLAGS+=" -L${LIB_INSTALL_BASE}/gmp/lib"
