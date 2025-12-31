@@ -144,8 +144,13 @@ for library in {0..61}; do
         LDFLAGS+=" $(pkg-config --libs --static libass 2>>"${BASEDIR}"/build.log)"
         CONFIGURE_POSTFIX+=" --enable-libass"
       else
-        echo -e "WARNING: libass was enabled but not found in the pkg-config search path. Skipping libass.\n" 1>>"${BASEDIR}"/build.log 2>&1
-        echo -e "WARNING: libass was enabled but not found. Skipping libass.\n"
+        echo -e "ERROR: libass was enabled but not found in the pkg-config search path.\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "ERROR: libass was enabled but not found. Please ensure libass is built before building ffmpeg.\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "ERROR: libass requires the following dependencies: libuuid, expat, libiconv, freetype, fribidi, fontconfig, libpng, harfbuzz\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "\n(*) libass was enabled but not found\n"
+        echo -e "(*) Please ensure libass and all its dependencies are enabled and built before building ffmpeg\n"
+        echo -e "(*) Required dependencies: libuuid, expat, libiconv, freetype, fribidi, fontconfig, libpng, harfbuzz\n"
+        exit 1
       fi
       ;;
     libiconv)

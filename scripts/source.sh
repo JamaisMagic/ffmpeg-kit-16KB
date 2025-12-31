@@ -137,8 +137,8 @@ get_library_source() {
     SOURCE_TYPE="TAG"
     ;;
   libuuid)
-    SOURCE_REPO_URL="https://github.com/arthenica/libuuid"
-    SOURCE_ID="libuuid-1.0.3"
+    SOURCE_REPO_URL="https://github.com/util-linux/util-linux"
+    SOURCE_ID="v2.40"
     SOURCE_TYPE="TAG"
     ;;
   libvidstab)
