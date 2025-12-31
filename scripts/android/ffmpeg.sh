@@ -350,7 +350,7 @@ export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-L[^ ]*/toolchains/llvm/prebuilt/
 
 # Remove -lpthread from LDFLAGS - on Android, pthread is part of libc and -pthread compiler flag is sufficient
 # The -lpthread linker flag doesn't exist on Android and causes linker errors
-export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-lpthread([[:space:]]|$)||g")
+export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-lpthread([[:space:]]\|$)||g")
 
 # Ensure gmp library path is available if gmp is enabled (check if --enable-gmp is in CONFIGURE_POSTFIX)
 if [[ "${CONFIGURE_POSTFIX}" == *"--enable-gmp"* ]]; then
