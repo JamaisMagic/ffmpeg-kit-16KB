@@ -348,6 +348,11 @@ export LDFLAGS+=" -L${ANDROID_NDK_ROOT}/platforms/android-${API}/arch-${TOOLCHAI
 # This is the host library path, not the ARM-specific paths like .../arm-linux-androideabi/lib or .../sysroot/...
 export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-L[^ ]*/toolchains/llvm/prebuilt/[^ /]+/lib([[:space:]]|$)||g")
 
+# Ensure gmp library path is available if gmp is enabled (check if --enable-gmp is in CONFIGURE_POSTFIX)
+if [[ "${CONFIGURE_POSTFIX}" == *"--enable-gmp"* ]]; then
+  export LDFLAGS+=" -L${LIB_INSTALL_BASE}/gmp/lib"
+fi
+
 # LINKING WITH ANDROID LTS SUPPORT LIBRARY IS NECESSARY FOR API < 18
 if [[ -n ${FFMPEG_KIT_LTS_BUILD} ]] && [[ ${API} -lt 18 ]]; then
   export LDFLAGS+=" -Wl,--whole-archive ${BASEDIR}/android/ffmpeg-kit-android-lib/src/main/cpp/libandroidltssupport.a -Wl,--no-whole-archive"
