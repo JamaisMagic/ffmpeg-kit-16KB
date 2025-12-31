@@ -137,9 +137,16 @@ for library in {0..61}; do
       CONFIGURE_POSTFIX+=" --enable-libaom"
       ;;
     libass)
-      CFLAGS+=" $(pkg-config --cflags libass 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static libass 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-libass"
+      # Check if libass is available via pkg-config before enabling it
+      pkg-config --exists libass 2>>"${BASEDIR}"/build.log
+      if [[ $? -eq 0 ]]; then
+        CFLAGS+=" $(pkg-config --cflags libass 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static libass 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-libass"
+      else
+        echo -e "WARNING: libass was enabled but not found in the pkg-config search path. Skipping libass.\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "WARNING: libass was enabled but not found. Skipping libass.\n"
+      fi
       ;;
     libiconv)
       CFLAGS+=" $(pkg-config --cflags libiconv 2>>"${BASEDIR}"/build.log)"
