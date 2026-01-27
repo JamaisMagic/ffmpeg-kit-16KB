@@ -16,9 +16,9 @@ jobs:
       ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
       ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
-      ARTIFACT_NAME: 'ffmpeg-kit-main-16kb'
-      VERSIOM_NAME: '6.1.4'
-      VERSIOM_CODE: 60104
+      ARG_ARTIFACT_NAME: 'ffmpeg-kit-main-16kb'
+      ARG_VERSIOM_NAME: '6.1.4'
+      ARG_VERSIOM_CODE: 60104
     steps:
       - uses: actions/checkout@v4
       - name: set up build tools
@@ -93,9 +93,9 @@ jobs:
       ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
       ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
-      ARTIFACT_NAME: 'ffmpeg-kit-lts-16kb'
-      VERSIOM_NAME: '6.1.4'
-      VERSIOM_CODE: 60104
+      ARG_ARTIFACT_NAME: 'ffmpeg-kit-lts-16kb'
+      ARG_VERSIOM_NAME: '6.1.4'
+      ARG_VERSIOM_CODE: 60104
     steps:
       - uses: actions/checkout@v4
       - name: set up build tools
