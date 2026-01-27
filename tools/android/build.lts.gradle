@@ -7,7 +7,7 @@ plugins {
 
 def artifactName = System.getenv('ARTIFACT_NAME') ?: 'ffmpeg-kit-lts-16kb'
 def versionName = System.getenv('VERSIOM_NAME') ?: '6.1.4'
-def versionCode = System.getenv('VERSIOM_CODE') ?: 60104
+def versionCode = System.getenv('VERSIOM_CODE') as Integer ?: 60104
 
 android {
     if (project.android.hasProperty("namespace")) {
