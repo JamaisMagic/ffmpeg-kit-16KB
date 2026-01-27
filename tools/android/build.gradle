@@ -81,7 +81,7 @@ mavenPublishing {
     pom {
         name = "FFMPEG Android 16KB"
         description = "FFmpeg Kit for Android (Maven Package for https://github.com/JamaisMagic/ffmpeg-kit-16KB)."
-        inceptionYear = "2026"
+        inceptionYear = "2025"
         url = "https://github.com/JamaisMagic/ffmpeg-kit-16KB"
         licenses {
             license {
