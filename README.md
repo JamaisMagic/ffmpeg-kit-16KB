@@ -1,4 +1,4 @@
-# 16KB Page Size Update
+## 16KB Page Size Update
 This fork only aims to make ffmpeg-kit compatible with new android versions (API 35) which request all binaries to be rebuilt.
 Google request developers to build new with new r27 and r28 ndk but ffmpeg-kit has its own NDK compatibility table which supports only upto r25.</p>
 <i>Edit: As original devs said, master branch has been tested upto NDK r27.</i>
@@ -12,11 +12,26 @@ NDK r27d: <a href="https://developer.android.com/ndk/downloads">Official Downloa
 You can find all details related to this update here. https://developer.android.com/guide/practices/page-sizes
 </br>
 
-### Why upgrade to ndk r27?
+## Why upgrade to ndk r27?
 The repo being forked from use ndk r23 for lts build and ndk r25 for main build. It should work fine, but when you enable some third party libraries, the file "libc++_shared.so" does not support 16KB. The upgrading to the ndk r27 solve this issue.
 
-### Why upgrade the min sdk level of lts build to 23
+## Why upgrade the min sdk level of lts build to 23?
 From ndk r25, it does not support armeabi-v7a without neon and Android 6.0(api 23) required neon in armeabi-v7a.
+
+## Variants
+This repo include these variants:
+
+min: Only enable android media codec and android zlib
+
+tls: Base on min, enable gnutls
+
+You can search the variant keywords in [Release](https://github.com/JamaisMagic/ffmpeg-kit-16KB/releases) or in [Maven Central](https://central.sonatype.com/namespace/io.github.jamaismagic.ffmpeg)
+
+</br>
+</br>
+</br>
+</br>
+</br>
 
 # FFmpegKit ![GitHub release](https://img.shields.io/badge/release-v6.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/com.arthenica/ffmpeg-kit-min) ![CocoaPods](https://img.shields.io/cocoapods/v/ffmpeg-kit-ios-min) ![pub](https://img.shields.io/pub/v/ffmpeg_kit_flutter.svg) ![npm](https://img.shields.io/npm/v/ffmpeg-kit-react-native.svg)
 
