@@ -3,6 +3,10 @@ plugins {
     id "com.vanniktech.maven.publish"
 }
 
+def argArtifactName = System.getenv('ARG_ARTIFACT_NAME') ?: 'ffmpeg-kit-main-16kb'
+def argVersionName = System.getenv('ARG_VERSIOM_NAME') ?: '6.1.4'
+def argVersionCode = Integer.valueOf(System.env.ARG_VERSIOM_CODE ?: 60104)
+
 android {
     if (project.android.hasProperty("namespace")) {
         namespace 'com.arthenica.ffmpegkit'
@@ -13,8 +17,8 @@ android {
     defaultConfig {
         minSdk 24
         targetSdk 35
-        versionCode 60104
-        versionName "6.1.4"
+        versionCode argVersionCode
+        versionName "$argVersionName"
         project.archivesBaseName = "ffmpeg-kit"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -72,7 +76,7 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates("io.github.jamaismagic.ffmpeg", "ffmpeg-kit-main-16kb", "6.1.4")
+    coordinates("io.github.jamaismagic.ffmpeg", "$argArtifactName", "$argVersionName")
 
     pom {
         name = "FFMPEG Android 16KB"

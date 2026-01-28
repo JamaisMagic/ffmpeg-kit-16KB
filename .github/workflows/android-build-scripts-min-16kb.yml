@@ -1,14 +1,12 @@
-name: android build scripts
+name: android build scripts min
 
 on:
-  workflow_dispatch: # Allows manual triggering, which will create a release
+  workflow_dispatch:
 
 jobs:
   build-main-on-linux:
-    if: false
-    name: android main on linux (ndk-r27-16k)
+    name: android main min on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
-    timeout-minutes: 1440
     defaults:
       run:
         shell: bash
@@ -18,7 +16,7 @@ jobs:
       ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
       ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
-      ARG_ARTIFACT_NAME: 'ffmpeg-kit-main-16kb'
+      ARG_ARTIFACT_NAME: 'ffmpeg-kit-main-min-16kb'
       ARG_VERSIOM_NAME: '6.1.4'
       ARG_VERSIOM_CODE: 60104
     steps:
@@ -61,8 +59,7 @@ jobs:
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
-        # run: ./android.sh -d --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
-        run: ./android.sh --disable-arm-v7a --disable-lib-openssl --disable-lib-tiff --disable-lib-rubberband --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvpx --enable-x264 --enable-x265
+        run: ./android.sh --disable-arm-v7a --enable-android-media-codec --enable-android-zlib
       - name: prepare and upload main aar
         run: |
           AAR_PATH=$(find prebuilt -type f -name 'ffmpeg-kit.aar')
@@ -70,11 +67,11 @@ jobs:
             echo "Error: ffmpeg-kit.aar not found in prebuilt directory."
             exit 1
           fi
-          mv "$AAR_PATH" "ffmpeg-kit-main-ndk-r27-16k.aar"
+          mv "$AAR_PATH" "ffmpeg-kit-main-min-ndk-r27-16k.aar"
       - uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-kit-main-aar
-          path: ffmpeg-kit-main-ndk-r27-16k.aar
+          name: ffmpeg-kit-main-min-aar
+          path: ffmpeg-kit-main-min-ndk-r27-16k.aar
           if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
@@ -86,7 +83,6 @@ jobs:
   build-lts-on-linux:
     name: android lts on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
-    timeout-minutes: 1440
     defaults:
       run:
         shell: bash
@@ -96,7 +92,7 @@ jobs:
       ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
       ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
-      ARG_ARTIFACT_NAME: 'ffmpeg-kit-lts-16kb'
+      ARG_ARTIFACT_NAME: 'ffmpeg-kit-lts-min-16kb'
       ARG_VERSIOM_NAME: '6.1.4'
       ARG_VERSIOM_CODE: 60104
     steps:
@@ -139,8 +135,7 @@ jobs:
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
-        # run: ./android.sh -d --lts --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
-        run: ./android.sh --lts --full --disable-arm-v7a --disable-lib-openssl --disable-lib-tiff --disable-lib-rubberband --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvpx --enable-x264 --enable-x265
+        run: ./android.sh --lts --disable-arm-v7a --enable-android-media-codec --enable-android-zlib
       - name: prepare and upload lts aar
         run: |
           AAR_PATH=$(find prebuilt -type f -name 'ffmpeg-kit.aar')
@@ -148,11 +143,11 @@ jobs:
             echo "Error: ffmpeg-kit.aar not found in prebuilt directory."
             exit 1
           fi
-          mv "$AAR_PATH" "ffmpeg-kit-lts-ndk-r27-16k.aar"
+          mv "$AAR_PATH" "ffmpeg-kit-lts-min-ndk-r27-16k.aar"
       - uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-kit-lts-aar
-          path: ffmpeg-kit-lts-ndk-r27-16k.aar
+          name: ffmpeg-kit-lts-min-aar
+          path: ffmpeg-kit-lts-min-ndk-r27-16k.aar
           if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
@@ -173,7 +168,7 @@ jobs:
     steps:
       - name: set release tag
         id: set_tag
-        run: echo "TAG_NAME=ffmpeg-kit-android-$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
+        run: echo "TAG_NAME=ffmpeg-kit-android-min-$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
       - name: download all aar artifacts
         uses: actions/download-artifact@v4
         with:
