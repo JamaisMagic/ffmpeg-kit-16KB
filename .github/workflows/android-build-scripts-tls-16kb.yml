@@ -1,0 +1,186 @@
+name: android build scripts tls
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-main-on-linux:
+    name: android main tls on linux (ndk-r27-16k)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
+    env:
+      ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralUsername }}
+      ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralPassword }}
+      ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
+      ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
+      ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
+      ARG_ARTIFACT_NAME: 'ffmpeg-kit-main-tls-16kb'
+      ARG_VERSIOM_NAME: '6.1.4'
+      ARG_VERSIOM_CODE: 60104
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up build tools
+        run: |
+          sudo apt update && sudo apt -y install build-essential gperf groff meson autoconf automake autogen gnulib gettext gtk-doc-tools gnutls-bin libgnutls28-dev libssl-dev
+          sudo apt install -y dash git-core libtool autopoint libavutil-dev libv4l-dev
+          sudo apt install -y python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
+          sudo apt install -y libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk
+          sudo apt install -y libtss2-dev libunbound-dev dns-root-data bison
+          sudo apt install -y texinfo texlive texlive-plain-generic texlive-extra-utils
+          sudo apt install -y libfreetype6-dev libglib2.0-dev libcairo2-dev ragel
+          sudo apt install -y pkg-config nasm yasm ninja-build
+          sudo apt install -y --reinstall gcc-14
+          sudo ln -s -f /usr/bin/gcc-14 /usr/bin/gcc
+          export OPENSSL_ROOT_DIR=/usr/include/openssl
+          wget https://cmake.org/files/v3.31/cmake-3.31.8.tar.gz
+          tar -xzvf cmake-3.31.8.tar.gz
+          cd cmake-3.31.8
+          ./bootstrap
+          make -j$(nproc)
+          sudo make install
+          which cmake
+          /usr/local/bin/cmake
+          export PATH=/usr/local/bin/cmake:$PATH
+          source ~/.bashrc
+          cmake --version
+          gcc --version
+      - name: set up adopt jdk 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+      - name: prerequisites
+        run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.10.2.4988404" "cmake;3.18.1"
+      - name: set up android ndk r27 (16k support)
+        run: |
+          curl -L -s "https://dl.google.com/android/repository/android-ndk-r27d-linux.zip" -o ndk.zip
+          unzip -q -o ndk.zip -d .ndk
+          echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
+      - name: run the build script
+        run: ./android.sh --disable-arm-v7a --enable-android-media-codec --enable-android-zlib
+      - name: prepare and upload main aar
+        run: |
+          AAR_PATH=$(find prebuilt -type f -name 'ffmpeg-kit.aar')
+          if [ -z "$AAR_PATH" ]; then
+            echo "Error: ffmpeg-kit.aar not found in prebuilt directory."
+            exit 1
+          fi
+          mv "$AAR_PATH" "ffmpeg-kit-main-tls-ndk-r27-16k.aar"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-kit-main-tls-aar
+          path: ffmpeg-kit-main-tls-ndk-r27-16k.aar
+          if-no-files-found: error
+      - name: print build logs
+        if: ${{ always() }}
+        run: cat build.log
+      - name: print ffbuild logs
+        if: ${{ failure() }}
+        run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
+
+  build-lts-on-linux:
+    name: android lts on linux (ndk-r27-16k)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
+    env:
+      ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralUsername }}
+      ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralPassword }}
+      ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID: ${{ secrets.ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID }}
+      ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
+      ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
+      ARG_ARTIFACT_NAME: 'ffmpeg-kit-lts-tls-16kb'
+      ARG_VERSIOM_NAME: '6.1.4'
+      ARG_VERSIOM_CODE: 60104
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up build tools
+        run: |
+          sudo apt update && sudo apt -y install build-essential gperf groff meson autoconf automake autogen gnulib gettext gtk-doc-tools gnutls-bin libgnutls28-dev libssl-dev
+          sudo apt install -y dash git-core libtool autopoint libavutil-dev libv4l-dev
+          sudo apt install -y python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
+          sudo apt install -y libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk
+          sudo apt install -y libtss2-dev libunbound-dev dns-root-data bison
+          sudo apt install -y texinfo texlive texlive-plain-generic texlive-extra-utils
+          sudo apt install -y libfreetype6-dev libglib2.0-dev libcairo2-dev ragel
+          sudo apt install -y pkg-config nasm yasm ninja-build
+          sudo apt install -y --reinstall gcc-14
+          sudo ln -s -f /usr/bin/gcc-14 /usr/bin/gcc
+          export OPENSSL_ROOT_DIR=/usr/include/openssl
+          wget https://cmake.org/files/v3.31/cmake-3.31.8.tar.gz
+          tar -xzvf cmake-3.31.8.tar.gz
+          cd cmake-3.31.8
+          ./bootstrap
+          make -j$(nproc)
+          sudo make install
+          which cmake
+          /usr/local/bin/cmake
+          export PATH=/usr/local/bin/cmake:$PATH
+          source ~/.bashrc
+          cmake --version
+          gcc --version
+      - name: set up adopt jdk 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+      - name: prerequisites
+        run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.10.2.4988404" "cmake;3.18.1"
+      - name: set up android ndk r27 (16k support)
+        run: |
+          curl -L -s "https://dl.google.com/android/repository/android-ndk-r27d-linux.zip" -o ndk.zip
+          unzip -q -o ndk.zip -d .ndk
+          echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
+      - name: run the build script
+        # run: ./android.sh -d --lts --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
+        run: ./android.sh --lts --disable-arm-v7a --enable-android-media-codec --enable-android-zlib
+      - name: prepare and upload lts aar
+        run: |
+          AAR_PATH=$(find prebuilt -type f -name 'ffmpeg-kit.aar')
+          if [ -z "$AAR_PATH" ]; then
+            echo "Error: ffmpeg-kit.aar not found in prebuilt directory."
+            exit 1
+          fi
+          mv "$AAR_PATH" "ffmpeg-kit-lts-tls-ndk-r27-16k.aar"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-kit-lts-tls-aar
+          path: ffmpeg-kit-lts-tls-ndk-r27-16k.aar
+          if-no-files-found: error
+      - name: print build logs
+        if: ${{ always() }}
+        run: cat build.log
+      - name: print ffbuild logs
+        if: ${{ failure() }}
+        run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
+
+  create-release:
+    name: create github release
+    # This job will only start if BOTH of the jobs above complete successfully.
+    needs: [build-main-on-linux, build-lts-on-linux]
+    runs-on: ubuntu-24.04
+    # This job will only run if the workflow is started manually.
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: write
+    steps:
+      - name: set release tag
+        id: set_tag
+        run: echo "TAG_NAME=ffmpeg-kit-android-tls-$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
+      - name: download all aar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: aar-artifacts
+      - name: list downloaded files for debug
+        run: ls -R aar-artifacts
+      - name: create github release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: "Android AARs (NDK r27-16k) - ${{ env.TAG_NAME }}"
+          body: "Automated release of Android AAR files from Linux builds using NDK r27 with 16kB page size support."
+          prerelease: true
+          files: aar-artifacts/*/*.aar
