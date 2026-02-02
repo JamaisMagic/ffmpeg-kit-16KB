@@ -19,7 +19,7 @@ The repo being forked from use ndk r23 for lts build and ndk r25 for main build.
 From ndk r25, it does not support armeabi-v7a without neon and Android 6.0(api 23) required neon in armeabi-v7a.
 
 ## Variants
-This repo include these variants:
+This repo include a [default release](https://github.com/JamaisMagic/ffmpeg-kit-16KB/releases/tag/ffmpeg-kit-android-2025-12-13T10-08-26) and the following variants:
 
 min: Only enable android media codec and android zlib
 
