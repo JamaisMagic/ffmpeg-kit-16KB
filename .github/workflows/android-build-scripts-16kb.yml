@@ -17,8 +17,8 @@ jobs:
       ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
       ARG_ARTIFACT_NAME: 'ffmpeg-kit-main-16kb'
-      ARG_VERSIOM_NAME: '6.1.5'
-      ARG_VERSIOM_CODE: 60105
+      ARG_VERSIOM_NAME: '6.1.6'
+      ARG_VERSIOM_CODE: 60106
     steps:
       - uses: actions/checkout@v4
       - name: set up build tools
@@ -94,8 +94,8 @@ jobs:
       ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
       ARG_ARTIFACT_NAME: 'ffmpeg-kit-lts-16kb'
-      ARG_VERSIOM_NAME: '6.1.5'
-      ARG_VERSIOM_CODE: 60105
+      ARG_VERSIOM_NAME: '6.1.6'
+      ARG_VERSIOM_CODE: 60106
     steps:
       - uses: actions/checkout@v4
       - name: set up build tools
