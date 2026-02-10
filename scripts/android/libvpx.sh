@@ -47,7 +47,13 @@ arm-v7a-neon)
 arm64-v8a)
   # NEON IS ENABLED BY --enable-runtime-cpu-detect
   TARGET_CPU="arm64"
-  ASM_OPTIONS="--disable-neon-dotprod --disable-neon-i8mm"
+  # Disable SVE/SVE2 optimizations as Android NDK doesn't support them
+  # These cause undefined symbol errors during linking
+  ASM_OPTIONS="--disable-neon-dotprod --disable-neon-i8mm --disable-sve --disable-sve2"
+  # Add compiler flags to explicitly disable SVE/SVE2 detection
+  # This prevents the compiler from enabling SVE even if detected
+  export CFLAGS="${CFLAGS} -mno-sve -mno-sve2"
+  export CXXFLAGS="${CXXFLAGS} -mno-sve -mno-sve2"
   export ASFLAGS="-c"
   ;;
 *)
