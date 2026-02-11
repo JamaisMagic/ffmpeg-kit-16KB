@@ -283,6 +283,10 @@ clean_temp_files() {
   enabled gcov && rm -f ${TMP_C%.c}.gcno ${TMP_CC%.cc}.gcno
 }
 
+# Ensure SVE/SVE2 can be disabled for Android arm64 (avoids undefined symbols at link time).
+# Main configure may not set these in ARCH_EXT_LIST; adding them here allows --disable-sve/--disable-sve2.
+ARCH_EXT_LIST="${ARCH_EXT_LIST} sve sve2"
+
 #
 # Toolchain Check Functions
 #
