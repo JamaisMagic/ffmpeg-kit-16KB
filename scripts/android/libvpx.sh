@@ -48,11 +48,9 @@ arm64-v8a)
   # NEON IS ENABLED BY --enable-runtime-cpu-detect
   TARGET_CPU="arm64"
   # Disable neon-dotprod/neon-i8mm for compatibility. Do NOT use --disable-sve/--disable-sve2:
-  # libvpx v1.15.x configure does not support those options and will fail with "Unknown option".
-  # Use compiler flags -mno-sve -mno-sve2 to avoid SVE code and linker errors.
+  # libvpx v1.15.x configure does not support those options. Do NOT add -mno-sve/-mno-sve2:
+  # Android NDK Clang does not support those flags and configure will fail with "unknown argument".
   ASM_OPTIONS="--disable-neon-dotprod --disable-neon-i8mm"
-  export CFLAGS="${CFLAGS} -mno-sve -mno-sve2"
-  export CXXFLAGS="${CXXFLAGS} -mno-sve -mno-sve2"
   export ASFLAGS="-c"
   ;;
 *)
