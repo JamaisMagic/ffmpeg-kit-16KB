@@ -47,11 +47,10 @@ arm-v7a-neon)
 arm64-v8a)
   # NEON IS ENABLED BY --enable-runtime-cpu-detect
   TARGET_CPU="arm64"
-  # Disable SVE/SVE2 optimizations as Android NDK doesn't support them
-  # These cause undefined symbol errors during linking
-  ASM_OPTIONS="--disable-neon-dotprod --disable-neon-i8mm --disable-sve --disable-sve2"
-  # Add compiler flags to explicitly disable SVE/SVE2 detection
-  # This prevents the compiler from enabling SVE even if detected
+  # Disable neon-dotprod/neon-i8mm for compatibility. Do NOT use --disable-sve/--disable-sve2:
+  # libvpx v1.15.x configure does not support those options and will fail with "Unknown option".
+  # Use compiler flags -mno-sve -mno-sve2 to avoid SVE code and linker errors.
+  ASM_OPTIONS="--disable-neon-dotprod --disable-neon-i8mm"
   export CFLAGS="${CFLAGS} -mno-sve -mno-sve2"
   export CXXFLAGS="${CXXFLAGS} -mno-sve -mno-sve2"
   export ASFLAGS="-c"
@@ -77,7 +76,7 @@ overwrite_file "${BASEDIR}"/tools/patch/make/libvpx/configure.sh "${BASEDIR}"/sr
   --extra-cflags="${CFLAGS}" \
   --extra-cxxflags="${CXXFLAGS}" \
   --as=yasm \
-  --log=yes \
+  --log=config.log \
   --enable-libs \
   --enable-install-libs \
   --enable-pic \
@@ -109,7 +108,19 @@ overwrite_file "${BASEDIR}"/tools/patch/make/libvpx/configure.sh "${BASEDIR}"/sr
   --disable-encode-perf-tests \
   --disable-codec-srcs \
   --disable-debug-libs \
-  --disable-internal-stats || return 1
+  --disable-internal-stats 1>>"${BASEDIR}"/build.log 2>&1
+CONFIGURE_EXIT=$?
+if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
+  echo -e "\n(*) libvpx configure failed (exit ${CONFIGURE_EXIT}). Dumping config.log:\n" 1>>"${BASEDIR}"/build.log 2>&1
+  if [[ -f config.log ]]; then
+    cat config.log 1>>"${BASEDIR}"/build.log 2>&1
+    echo -e "\n(*) libvpx configure failed. Full config.log has been appended to build.log"
+  else
+    echo -e "config.log not found (configure may not have written it).\n" 1>>"${BASEDIR}"/build.log 2>&1
+    echo -e "\n(*) libvpx configure failed. config.log was not found; see build.log for configure output."
+  fi
+  return 1
+fi
 
 make -j$(get_cpu_count) || return 1
 
