@@ -48,21 +48,22 @@ if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
   return 1
 fi
 
-# Build only utilname "libuuid" from util-linux top-level Makefile.
-# Do not call plain "make" (default target builds all-recursive and can fail in po/).
+# Build libuuid from util-linux top-level Makefile.
+# Target "libuuid" is a no-op (directory name). The real library target is "libuuid.la" (usrlib_exec_LTLIBRARIES).
+# Try "make libuuid.la" first; if that does not create the archive, run default "make" to build enabled targets.
 echo -e "INFO: libuuid build working directory: $(pwd)\n" 1>>"${BASEDIR}"/build.log 2>&1
-echo -e "INFO: make dry-run for target 'libuuid' (for debugging target mapping):\n" 1>>"${BASEDIR}"/build.log 2>&1
-make -n libuuid 1>>"${BASEDIR}"/build.log 2>&1 || true
-make -j$(get_cpu_count) libuuid 1>>"${BASEDIR}"/build.log 2>&1 || return 1
-echo -e "INFO: libuuid compile command completed. Verifying generated artifacts...\n" 1>>"${BASEDIR}"/build.log 2>&1
+make -j$(get_cpu_count) libuuid.la 1>>"${BASEDIR}"/build.log 2>&1 || return 1
+echo -e "INFO: libuuid compile step completed. Verifying generated artifacts...\n" 1>>"${BASEDIR}"/build.log 2>&1
 
 # Install libuuid manually since we're only building that component
 mkdir -p "${LIB_INSTALL_PREFIX}"/lib || return 1
 mkdir -p "${LIB_INSTALL_PREFIX}"/include || return 1
 
-# Copy the library file (check both util-linux layouts and direct/.libs locations)
+# Copy the library file (util-linux builds libuuid.la in top-level; libtool puts .a in .libs/)
 LIBUUID_ARCHIVE_PATH=""
-if [[ -f libuuid/.libs/libuuid.a ]]; then
+if [[ -f .libs/libuuid.a ]]; then
+  LIBUUID_ARCHIVE_PATH=".libs/libuuid.a"
+elif [[ -f libuuid/.libs/libuuid.a ]]; then
   LIBUUID_ARCHIVE_PATH="libuuid/.libs/libuuid.a"
 elif [[ -f libuuid/libuuid.a ]]; then
   LIBUUID_ARCHIVE_PATH="libuuid/libuuid.a"
@@ -78,6 +79,8 @@ if [[ -n "${LIBUUID_ARCHIVE_PATH}" ]]; then
 else
   echo -e "ERROR: libuuid.a not found after build\n" 1>>"${BASEDIR}"/build.log 2>&1
   echo -e "INFO: Debug listing of candidate libuuid output directories:\n" 1>>"${BASEDIR}"/build.log 2>&1
+  echo -e "INFO: ls -la .libs (top-level)\n" 1>>"${BASEDIR}"/build.log 2>&1
+  ls -la .libs 1>>"${BASEDIR}"/build.log 2>&1 || true
   echo -e "INFO: ls -la libuuid\n" 1>>"${BASEDIR}"/build.log 2>&1
   ls -la libuuid 1>>"${BASEDIR}"/build.log 2>&1 || true
   echo -e "INFO: ls -la libuuid/.libs\n" 1>>"${BASEDIR}"/build.log 2>&1
@@ -86,8 +89,8 @@ else
   ls -la libuuid/src 1>>"${BASEDIR}"/build.log 2>&1 || true
   echo -e "INFO: ls -la libuuid/src/.libs\n" 1>>"${BASEDIR}"/build.log 2>&1
   ls -la libuuid/src/.libs 1>>"${BASEDIR}"/build.log 2>&1 || true
-  echo -e "INFO: search for files named '*uuid*.a' under libuuid:\n" 1>>"${BASEDIR}"/build.log 2>&1
-  find libuuid -type f -name "*uuid*.a" 1>>"${BASEDIR}"/build.log 2>&1 || true
+  echo -e "INFO: search for files named '*uuid*.a':\n" 1>>"${BASEDIR}"/build.log 2>&1
+  find . -maxdepth 4 -type f -name "*uuid*.a" 1>>"${BASEDIR}"/build.log 2>&1 || true
   echo -e "INFO: search for files named 'uuid.h' under libuuid:\n" 1>>"${BASEDIR}"/build.log 2>&1
   find libuuid -type f -name "uuid.h" 1>>"${BASEDIR}"/build.log 2>&1 || true
   return 1
