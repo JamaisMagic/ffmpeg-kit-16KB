@@ -27,6 +27,9 @@ fi
   --with-sysroot="${ANDROID_SYSROOT}" \
   --enable-static \
   --disable-shared \
+  --disable-nls \
+  --disable-asciidoc \
+  --disable-manpages \
   --disable-all-programs \
   --disable-liblastlog2 \
   --disable-libblkid \
@@ -45,10 +48,9 @@ if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
   return 1
 fi
 
-# Build from util-linux top-level Makefile.
-# We disable all programs and all unrelated libs in configure, so this remains
-# effectively limited to the enabled library set (libuuid here).
-make -j$(get_cpu_count) 1>>"${BASEDIR}"/build.log 2>&1 || return 1
+# Build only utilname "libuuid" from util-linux top-level Makefile.
+# Do not call plain "make" (default target builds all-recursive and can fail in po/).
+make -j$(get_cpu_count) libuuid 1>>"${BASEDIR}"/build.log 2>&1 || return 1
 
 # Install libuuid manually since we're only building that component
 mkdir -p "${LIB_INSTALL_PREFIX}"/lib || return 1
