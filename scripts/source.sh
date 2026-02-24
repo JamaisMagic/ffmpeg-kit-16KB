@@ -232,8 +232,8 @@ get_library_source() {
     SOURCE_TYPE="TAG"
     ;;
   tiff)
-    SOURCE_REPO_URL="https://github.com/arthenica/libtiff"
-    SOURCE_ID="v4.1.0"
+    SOURCE_REPO_URL="https://github.com/libsdl-org/libtiff"
+    SOURCE_ID="v4.7.1"
     SOURCE_TYPE="TAG"
     ;;
   twolame)
