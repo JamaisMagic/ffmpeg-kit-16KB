@@ -32,7 +32,6 @@ fi
   --disable-libmount \
   --disable-libsmartcols \
   --disable-libfdisk \
-  --disable-libfstrim \
   --disable-fast-install \
   ${YEAR2038_OPTION} \
   --host="${HOST}" 1>>"${BASEDIR}"/build.log 2>&1
@@ -46,11 +45,12 @@ if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
 fi
 
 # Build libuuid from util-linux top-level Makefile.
-# IMPORTANT: do not fallback to plain "make" (which may build unrelated components).
-# Only libuuid-specific targets are allowed here.
-make -j$(get_cpu_count) libuuid 1>>"${BASEDIR}"/build.log 2>&1 || \
-make -j$(get_cpu_count) libuuid/src/libuuid.la 1>>"${BASEDIR}"/build.log 2>&1 || {
-  echo -e "ERROR: Failed to build libuuid with libuuid-only targets from top-level Makefile.\n" 1>>"${BASEDIR}"/build.log 2>&1
+# IMPORTANT: do not use "make libuuid" — it may match the "libuuid/" directory
+# and report "Nothing to be done" without building the library.
+# Only explicit libuuid file targets are allowed here.
+make -j$(get_cpu_count) libuuid/src/libuuid.la 1>>"${BASEDIR}"/build.log 2>&1 || \
+make -j$(get_cpu_count) libuuid/src/libuuid.a 1>>"${BASEDIR}"/build.log 2>&1 || {
+  echo -e "ERROR: Failed to build explicit libuuid targets from top-level Makefile.\n" 1>>"${BASEDIR}"/build.log 2>&1
   return 1
 }
 
