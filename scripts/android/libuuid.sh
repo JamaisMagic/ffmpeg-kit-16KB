@@ -50,35 +50,66 @@ fi
 
 # Build only utilname "libuuid" from util-linux top-level Makefile.
 # Do not call plain "make" (default target builds all-recursive and can fail in po/).
+echo -e "INFO: libuuid build working directory: $(pwd)\n" 1>>"${BASEDIR}"/build.log 2>&1
+echo -e "INFO: make dry-run for target 'libuuid' (for debugging target mapping):\n" 1>>"${BASEDIR}"/build.log 2>&1
+make -n libuuid 1>>"${BASEDIR}"/build.log 2>&1 || true
 make -j$(get_cpu_count) libuuid 1>>"${BASEDIR}"/build.log 2>&1 || return 1
+echo -e "INFO: libuuid compile command completed. Verifying generated artifacts...\n" 1>>"${BASEDIR}"/build.log 2>&1
 
 # Install libuuid manually since we're only building that component
 mkdir -p "${LIB_INSTALL_PREFIX}"/lib || return 1
 mkdir -p "${LIB_INSTALL_PREFIX}"/include || return 1
 
 # Copy the library file (check both util-linux layouts and direct/.libs locations)
+LIBUUID_ARCHIVE_PATH=""
 if [[ -f libuuid/.libs/libuuid.a ]]; then
-  cp libuuid/.libs/libuuid.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
+  LIBUUID_ARCHIVE_PATH="libuuid/.libs/libuuid.a"
 elif [[ -f libuuid/libuuid.a ]]; then
-  cp libuuid/libuuid.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
+  LIBUUID_ARCHIVE_PATH="libuuid/libuuid.a"
 elif [[ -f libuuid/src/.libs/libuuid.a ]]; then
-  cp libuuid/src/.libs/libuuid.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
+  LIBUUID_ARCHIVE_PATH="libuuid/src/.libs/libuuid.a"
 elif [[ -f libuuid/src/libuuid.a ]]; then
-  cp libuuid/src/libuuid.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
+  LIBUUID_ARCHIVE_PATH="libuuid/src/libuuid.a"
+fi
+
+if [[ -n "${LIBUUID_ARCHIVE_PATH}" ]]; then
+  echo -e "INFO: libuuid static library path: ${BASEDIR}/src/${LIB_NAME}/${LIBUUID_ARCHIVE_PATH}\n" 1>>"${BASEDIR}"/build.log 2>&1
+  cp "${LIBUUID_ARCHIVE_PATH}" "${LIB_INSTALL_PREFIX}"/lib/ || return 1
 else
   echo -e "ERROR: libuuid.a not found after build\n" 1>>"${BASEDIR}"/build.log 2>&1
+  echo -e "INFO: Debug listing of candidate libuuid output directories:\n" 1>>"${BASEDIR}"/build.log 2>&1
+  echo -e "INFO: ls -la libuuid\n" 1>>"${BASEDIR}"/build.log 2>&1
+  ls -la libuuid 1>>"${BASEDIR}"/build.log 2>&1 || true
+  echo -e "INFO: ls -la libuuid/.libs\n" 1>>"${BASEDIR}"/build.log 2>&1
+  ls -la libuuid/.libs 1>>"${BASEDIR}"/build.log 2>&1 || true
+  echo -e "INFO: ls -la libuuid/src\n" 1>>"${BASEDIR}"/build.log 2>&1
+  ls -la libuuid/src 1>>"${BASEDIR}"/build.log 2>&1 || true
+  echo -e "INFO: ls -la libuuid/src/.libs\n" 1>>"${BASEDIR}"/build.log 2>&1
+  ls -la libuuid/src/.libs 1>>"${BASEDIR}"/build.log 2>&1 || true
+  echo -e "INFO: search for files named '*uuid*.a' under libuuid:\n" 1>>"${BASEDIR}"/build.log 2>&1
+  find libuuid -type f -name "*uuid*.a" 1>>"${BASEDIR}"/build.log 2>&1 || true
+  echo -e "INFO: search for files named 'uuid.h' under libuuid:\n" 1>>"${BASEDIR}"/build.log 2>&1
+  find libuuid -type f -name "uuid.h" 1>>"${BASEDIR}"/build.log 2>&1 || true
   return 1
 fi
 
 # Copy the header file
+LIBUUID_HEADER_PATH=""
 if [[ -f libuuid/uuid.h ]]; then
-  cp libuuid/uuid.h "${LIB_INSTALL_PREFIX}"/include/ || return 1
+  LIBUUID_HEADER_PATH="libuuid/uuid.h"
 elif [[ -f libuuid/src/uuid.h ]]; then
-  cp libuuid/src/uuid.h "${LIB_INSTALL_PREFIX}"/include/ || return 1
+  LIBUUID_HEADER_PATH="libuuid/src/uuid.h"
+fi
+
+if [[ -n "${LIBUUID_HEADER_PATH}" ]]; then
+  echo -e "INFO: libuuid header path: ${BASEDIR}/src/${LIB_NAME}/${LIBUUID_HEADER_PATH}\n" 1>>"${BASEDIR}"/build.log 2>&1
+  cp "${LIBUUID_HEADER_PATH}" "${LIB_INSTALL_PREFIX}"/include/ || return 1
 else
   echo -e "ERROR: uuid.h not found\n" 1>>"${BASEDIR}"/build.log 2>&1
   return 1
 fi
+
+echo -e "INFO: libuuid artifacts copied successfully to ${LIB_INSTALL_PREFIX}\n" 1>>"${BASEDIR}"/build.log 2>&1
 
 # CREATE PACKAGE CONFIG MANUALLY
 # Get version from util-linux's configure.ac
