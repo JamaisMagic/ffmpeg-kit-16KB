@@ -14,6 +14,13 @@ fi
 
 # Configure util-linux
 # libuuid is built by default, we'll only build that component
+# util-linux enforces 64-bit time_t by default. Android armv7 toolchains can fail
+# this check, so disable the year2038 requirement only for 32-bit ARM targets.
+YEAR2038_OPTION=""
+if [[ "${ARCH}" == "arm-v7a" ]] || [[ "${ARCH}" == "arm-v7a-neon" ]]; then
+  YEAR2038_OPTION="--disable-year2038"
+fi
+
 ./configure \
   --prefix="${LIB_INSTALL_PREFIX}" \
   --with-pic \
@@ -26,7 +33,16 @@ fi
   --disable-libfdisk \
   --disable-libfstrim \
   --disable-fast-install \
-  --host="${HOST}" 2>>"${BASEDIR}"/build.log 1>>"${BASEDIR}"/build.log || return 1
+  ${YEAR2038_OPTION} \
+  --host="${HOST}" 1>>"${BASEDIR}"/build.log 2>&1
+CONFIGURE_EXIT=$?
+if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
+  echo -e "\n(*) libuuid(util-linux) configure failed (exit ${CONFIGURE_EXIT}). Dumping config.log:\n" 1>>"${BASEDIR}"/build.log 2>&1
+  if [[ -f config.log ]]; then
+    cat config.log 1>>"${BASEDIR}"/build.log 2>&1
+  fi
+  return 1
+fi
 
 # Build only libuuid
 make -j$(get_cpu_count) -C libuuid || return 1
