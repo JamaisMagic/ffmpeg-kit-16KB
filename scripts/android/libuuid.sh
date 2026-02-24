@@ -27,6 +27,7 @@ fi
   --with-sysroot="${ANDROID_SYSROOT}" \
   --enable-static \
   --disable-shared \
+  --disable-all-programs \
   --disable-liblastlog2 \
   --disable-libblkid \
   --disable-libmount \
@@ -44,15 +45,10 @@ if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
   return 1
 fi
 
-# Build libuuid from util-linux top-level Makefile.
-# IMPORTANT: do not use "make libuuid" — it may match the "libuuid/" directory
-# and report "Nothing to be done" without building the library.
-# Only explicit libuuid file targets are allowed here.
-make -j$(get_cpu_count) libuuid/src/libuuid.la 1>>"${BASEDIR}"/build.log 2>&1 || \
-make -j$(get_cpu_count) libuuid/src/libuuid.a 1>>"${BASEDIR}"/build.log 2>&1 || {
-  echo -e "ERROR: Failed to build explicit libuuid targets from top-level Makefile.\n" 1>>"${BASEDIR}"/build.log 2>&1
-  return 1
-}
+# Build from util-linux top-level Makefile.
+# We disable all programs and all unrelated libs in configure, so this remains
+# effectively limited to the enabled library set (libuuid here).
+make -j$(get_cpu_count) 1>>"${BASEDIR}"/build.log 2>&1 || return 1
 
 # Install libuuid manually since we're only building that component
 mkdir -p "${LIB_INSTALL_PREFIX}"/lib || return 1
