@@ -27,6 +27,7 @@ fi
   --with-sysroot="${ANDROID_SYSROOT}" \
   --enable-static \
   --disable-shared \
+  --disable-liblastlog2 \
   --disable-libblkid \
   --disable-libmount \
   --disable-libsmartcols \
