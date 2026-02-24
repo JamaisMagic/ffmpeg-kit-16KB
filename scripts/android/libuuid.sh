@@ -46,17 +46,31 @@ if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
 fi
 
 # Build only libuuid
-make -j$(get_cpu_count) -C libuuid || return 1
+# util-linux layout differs across versions:
+# - some have libuuid/Makefile
+# - others have libuuid/src/Makefile
+if [[ -f libuuid/Makefile ]]; then
+  make -j$(get_cpu_count) -C libuuid || return 1
+elif [[ -f libuuid/src/Makefile ]]; then
+  make -j$(get_cpu_count) -C libuuid/src || return 1
+else
+  echo -e "ERROR: libuuid Makefile not found in libuuid/ or libuuid/src/\n" 1>>"${BASEDIR}"/build.log 2>&1
+  return 1
+fi
 
 # Install libuuid manually since we're only building that component
 mkdir -p "${LIB_INSTALL_PREFIX}"/lib || return 1
 mkdir -p "${LIB_INSTALL_PREFIX}"/include || return 1
 
-# Copy the library file (check both .libs and direct location)
+# Copy the library file (check both util-linux layouts and direct/.libs locations)
 if [[ -f libuuid/.libs/libuuid.a ]]; then
   cp libuuid/.libs/libuuid.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
 elif [[ -f libuuid/libuuid.a ]]; then
   cp libuuid/libuuid.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
+elif [[ -f libuuid/src/.libs/libuuid.a ]]; then
+  cp libuuid/src/.libs/libuuid.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
+elif [[ -f libuuid/src/libuuid.a ]]; then
+  cp libuuid/src/libuuid.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
 else
   echo -e "ERROR: libuuid.a not found after build\n" 1>>"${BASEDIR}"/build.log 2>&1
   return 1
@@ -65,6 +79,8 @@ fi
 # Copy the header file
 if [[ -f libuuid/uuid.h ]]; then
   cp libuuid/uuid.h "${LIB_INSTALL_PREFIX}"/include/ || return 1
+elif [[ -f libuuid/src/uuid.h ]]; then
+  cp libuuid/src/uuid.h "${LIB_INSTALL_PREFIX}"/include/ || return 1
 else
   echo -e "ERROR: uuid.h not found\n" 1>>"${BASEDIR}"/build.log 2>&1
   return 1
