@@ -45,18 +45,14 @@ if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
   return 1
 fi
 
-# Build only libuuid
-# util-linux layout differs across versions:
-# - some have libuuid/Makefile
-# - others have libuuid/src/Makefile
-if [[ -f libuuid/Makefile ]]; then
-  make -j$(get_cpu_count) -C libuuid || return 1
-elif [[ -f libuuid/src/Makefile ]]; then
-  make -j$(get_cpu_count) -C libuuid/src || return 1
-else
-  echo -e "ERROR: libuuid Makefile not found in libuuid/ or libuuid/src/\n" 1>>"${BASEDIR}"/build.log 2>&1
+# Build libuuid from util-linux top-level Makefile.
+# IMPORTANT: do not fallback to plain "make" (which may build unrelated components).
+# Only libuuid-specific targets are allowed here.
+make -j$(get_cpu_count) libuuid 1>>"${BASEDIR}"/build.log 2>&1 || \
+make -j$(get_cpu_count) libuuid/src/libuuid.la 1>>"${BASEDIR}"/build.log 2>&1 || {
+  echo -e "ERROR: Failed to build libuuid with libuuid-only targets from top-level Makefile.\n" 1>>"${BASEDIR}"/build.log 2>&1
   return 1
-fi
+}
 
 # Install libuuid manually since we're only building that component
 mkdir -p "${LIB_INSTALL_PREFIX}"/lib || return 1
