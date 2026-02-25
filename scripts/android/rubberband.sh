@@ -27,9 +27,10 @@ if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
 fi
 
 # WORKAROUND FOR RUBBERBAND v3.0.0: DYNAMICALLY DETECT EXISTING SOURCE FILES
-# Find all existing .cpp files in source directories and update Makefile.
-# Exclude src/temporary.cpp: it is a dev stub that includes finer/R3StretcherImpl.h (not present in v3.0.0).
-EXISTING_SOURCES=$(find src -name "*.cpp" -type f 2>/dev/null | grep -v '^src/temporary\.cpp$' | sort | tr '\n' ' ' | sed 's/ $//')
+# Find library .cpp only; exclude non-library files that would cause "file not found" or extra deps:
+#   - src/temporary.cpp: dev stub needs finer/R3StretcherImpl.h (not in v3.0.0)
+#   - src/test/*.cpp: unit tests need Boost (boost/test/unit_test.hpp)
+EXISTING_SOURCES=$(find src -name "*.cpp" -type f 2>/dev/null | grep -v '^src/temporary\.cpp$' | grep -v '^src/test/' | sort | tr '\n' ' ' | sed 's/ $//')
 
 if [[ -n "${EXISTING_SOURCES}" ]]; then
   # Replace LIBRARY_SOURCES assignment with detected files
