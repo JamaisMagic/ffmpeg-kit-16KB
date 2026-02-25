@@ -263,12 +263,13 @@ for library in {0..61}; do
       ;;
     srt)
       if [[ -f "${INSTALL_PKG_CONFIG_DIR}/srt.pc" ]]; then
+        echo -e "DEBUG: Enabling libsrt (srt.pc at ${INSTALL_PKG_CONFIG_DIR}/srt.pc)\n" 1>>"${BASEDIR}"/build.log 2>&1
         CFLAGS+=" $(pkg-config --cflags srt 2>>"${BASEDIR}"/build.log)"
         LDFLAGS+=" $(pkg-config --libs --static srt 2>>"${BASEDIR}"/build.log)"
         CONFIGURE_POSTFIX+=" --enable-libsrt"
       else
         CONFIGURE_POSTFIX+=" --disable-libsrt"
-        echo -e "\nWARN: srt was enabled but srt.pc not found; FFmpeg will be built without libsrt.\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "\nWARN: srt was enabled but srt.pc not found at ${INSTALL_PKG_CONFIG_DIR}/srt.pc; FFmpeg will be built without libsrt.\n" 1>>"${BASEDIR}"/build.log 2>&1
       fi
       ;;
     tesseract)

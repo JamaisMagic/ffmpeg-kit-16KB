@@ -806,7 +806,20 @@ create_srt_package_config() {
   local SRT_PC_DIR="${BASEDIR}/prebuilt/$(get_build_directory)/pkgconfig"
   mkdir -p "${SRT_PC_DIR}" 1>>"${BASEDIR}"/build.log 2>&1
 
-  cat >"${SRT_PC_DIR}/srt.pc" <<EOF
+  # SRT was built with either OpenSSL or GnuTLS; srt.pc must only require the one that exists (else pkg-config fails when openssl is disabled)
+  local SRT_REQUIRES=""
+  if [[ -f "${SRT_PC_DIR}/openssl.pc" ]]; then
+    SRT_REQUIRES="openssl libcrypto"
+    echo -e "DEBUG: create_srt_package_config: SRT built with OpenSSL, Requires.private=${SRT_REQUIRES}\n" 1>>"${BASEDIR}"/build.log 2>&1
+  elif [[ -f "${SRT_PC_DIR}/gnutls.pc" ]]; then
+    SRT_REQUIRES="gnutls"
+    echo -e "DEBUG: create_srt_package_config: SRT built with GnuTLS, Requires.private=${SRT_REQUIRES}\n" 1>>"${BASEDIR}"/build.log 2>&1
+  else
+    echo -e "DEBUG: create_srt_package_config: no openssl.pc or gnutls.pc in ${SRT_PC_DIR}, omitting Requires.private\n" 1>>"${BASEDIR}"/build.log 2>&1
+  fi
+
+  if [[ -n "${SRT_REQUIRES}" ]]; then
+    cat >"${SRT_PC_DIR}/srt.pc" <<EOF
 prefix=${LIB_INSTALL_BASE}/srt
 exec_prefix=\${prefix}
 libdir=\${exec_prefix}/lib
@@ -819,8 +832,25 @@ Version: ${SRT_VERSION}
 Libs: -L\${libdir} -lsrt
 Libs.private: -lc -lm -ldl -llog -lc++_shared
 Cflags: -I\${includedir} -I\${includedir}/srt
-Requires.private: openssl libcrypto
+Requires.private: ${SRT_REQUIRES}
 EOF
+  else
+    cat >"${SRT_PC_DIR}/srt.pc" <<EOF
+prefix=${LIB_INSTALL_BASE}/srt
+exec_prefix=\${prefix}
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: srt
+Description: SRT library set
+Version: ${SRT_VERSION}
+
+Libs: -L\${libdir} -lsrt
+Libs.private: -lc -lm -ldl -llog -lc++_shared
+Cflags: -I\${includedir} -I\${includedir}/srt
+EOF
+  fi
+  echo -e "DEBUG: create_srt_package_config: wrote ${SRT_PC_DIR}/srt.pc\n" 1>>"${BASEDIR}"/build.log 2>&1
 }
 
 create_tesseract_package_config() {
