@@ -802,8 +802,11 @@ EOF
 
 create_srt_package_config() {
   local SRT_VERSION="$1"
+  # Use same path as set_toolchain_paths so ffmpeg.sh finds srt.pc (avoid relying on INSTALL_PKG_CONFIG_DIR in child process)
+  local SRT_PC_DIR="${BASEDIR}/prebuilt/$(get_build_directory)/pkgconfig"
+  mkdir -p "${SRT_PC_DIR}" 1>>"${BASEDIR}"/build.log 2>&1
 
-  cat >"${INSTALL_PKG_CONFIG_DIR}/srt.pc" <<EOF
+  cat >"${SRT_PC_DIR}/srt.pc" <<EOF
 prefix=${LIB_INSTALL_BASE}/srt
 exec_prefix=\${prefix}
 libdir=\${exec_prefix}/lib

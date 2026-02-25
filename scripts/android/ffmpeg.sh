@@ -262,9 +262,14 @@ for library in {0..61}; do
       CONFIGURE_POSTFIX+=" --enable-libspeex"
       ;;
     srt)
-      CFLAGS+=" $(pkg-config --cflags srt 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static srt 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-libsrt"
+      if [[ -f "${INSTALL_PKG_CONFIG_DIR}/srt.pc" ]]; then
+        CFLAGS+=" $(pkg-config --cflags srt 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static srt 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-libsrt"
+      else
+        CONFIGURE_POSTFIX+=" --disable-libsrt"
+        echo -e "\nWARN: srt was enabled but srt.pc not found; FFmpeg will be built without libsrt.\n" 1>>"${BASEDIR}"/build.log 2>&1
+      fi
       ;;
     tesseract)
       CFLAGS+=" $(pkg-config --cflags tesseract 2>>"${BASEDIR}"/build.log)"
