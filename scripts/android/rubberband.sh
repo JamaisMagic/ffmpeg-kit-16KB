@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Run from library source (run-android.sh already does this; ensure it for v3)
+cd "${BASEDIR}"/src/"${LIB_NAME}" || return 1
+
 # ALWAYS CLEAN THE PREVIOUS BUILD
-make distclean 2>/dev/null 1>/dev/null
+make distclean 2>/dev/null 1>/dev/null || true
 
 # WORKAROUND TO DISABLE OPTIONAL FEATURES MANUALLY, SINCE ./configure DOES NOT PROVIDE OPTIONS FOR THEM
 overwrite_file "${BASEDIR}"/tools/patch/make/rubberband/configure.ac "${BASEDIR}"/src/"${LIB_NAME}"/configure.ac || return 1
@@ -16,7 +19,12 @@ autoreconf_library "${LIB_NAME}" 1>>"${BASEDIR}"/build.log 2>&1 || return 1
 
 ./configure \
   --prefix="${LIB_INSTALL_PREFIX}" \
-  --host="${HOST}" || return 1
+  --host="${HOST}" 1>>"${BASEDIR}"/build.log 2>&1
+CONFIGURE_EXIT=$?
+if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
+  echo -e "\n(*) rubberband configure failed (exit ${CONFIGURE_EXIT}). See build.log\n" 1>>"${BASEDIR}"/build.log 2>&1
+  return 1
+fi
 
 # WORKAROUND FOR RUBBERBAND v3.0.0: DYNAMICALLY DETECT EXISTING SOURCE FILES
 # Find all existing .cpp files in source directories and update Makefile
@@ -44,9 +52,28 @@ if [[ -n "${EXISTING_SOURCES}" ]]; then
   ' Makefile > Makefile.tmp && mv Makefile.tmp Makefile || true
 fi
 
-make AR="$AR" -j$(get_cpu_count) || return 1
+# WORKAROUND FOR RUBBERBAND v3: source uses src/common/ but includes expect system/
+# (e.g. #include "system/sysutils.h"). Symlink src/system -> src/common so includes resolve.
+if [[ -d src/common ]] && [[ ! -e src/system ]]; then
+  ln -s common src/system
+fi
 
-make install || return 1
+# Build only the static library (v3.0.0 may have ladspa-lv2 instead of ladspa/, and we only need the lib)
+mkdir -p lib bin
+make AR="$AR" -j$(get_cpu_count) static 1>>"${BASEDIR}"/build.log 2>&1 || return 1
 
-# MANUALLY COPY PKG-CONFIG FILES
-cp ./*.pc "${INSTALL_PKG_CONFIG_DIR}" || return 1
+# Manual install: we did not build program/dynamic/ladspa, so do not run "make install"
+mkdir -p "${LIB_INSTALL_PREFIX}"/lib "${LIB_INSTALL_PREFIX}"/include/rubberband || return 1
+cp -f lib/librubberband.a "${LIB_INSTALL_PREFIX}"/lib/ || return 1
+if [[ -d rubberband ]]; then
+  for h in rubberband/rubberband-c.h rubberband/RubberBandStretcher.h; do
+    [[ -f "$h" ]] && cp -f "$h" "${LIB_INSTALL_PREFIX}"/include/rubberband/
+  done
+  # If standard names missing, copy any headers present (v3 layout may differ)
+  if [[ ! -f "${LIB_INSTALL_PREFIX}"/include/rubberband/RubberBandStretcher.h ]]; then
+    cp -f rubberband/*.h "${LIB_INSTALL_PREFIX}"/include/rubberband/ 2>/dev/null || true
+  fi
+fi
+# Generate and install .pc (PREFIX is already substituted in our .pc.in; fill at install time)
+sed "s,%PREFIX%,${LIB_INSTALL_PREFIX},g" rubberband.pc.in | sed 's/%DEPENDENCIES%/sndfile, samplerate/g' > rubberband.pc
+cp -f rubberband.pc "${INSTALL_PKG_CONFIG_DIR}" || return 1
