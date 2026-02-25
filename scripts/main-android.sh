@@ -37,10 +37,11 @@ if [ ! -d "${PKG_CONFIG_DIRECTORY}" ]; then
   mkdir -p "${PKG_CONFIG_DIRECTORY}" || return 1
 fi
 
-# FILTER WHICH EXTERNAL LIBRARIES WILL BE BUILT (dependency order: build fontconfig/harfbuzz/libass last so their deps are ready)
+# FILTER WHICH EXTERNAL LIBRARIES WILL BE BUILT (dependency order: build deps first, then dependents)
 # NOTE THAT BUILT-IN LIBRARIES ARE FORWARDED TO FFMPEG SCRIPT WITHOUT ANY PROCESSING
 enabled_library_list=()
 deferred_fontconfig=(); deferred_harfbuzz=(); deferred_libass=()
+deferred_libvorbis=(); deferred_libtheora=(); deferred_tesseract=()
 for library in {1..50}; do
   if [[ ${!library} -eq 1 ]]; then
     ENABLED_LIBRARY=$(get_library_name $((library - 1)))
@@ -48,13 +49,16 @@ for library in {1..50}; do
       fontconfig) deferred_fontconfig+=("$ENABLED_LIBRARY") ;;
       harfbuzz)  deferred_harfbuzz+=("$ENABLED_LIBRARY") ;;
       libass)    deferred_libass+=("$ENABLED_LIBRARY") ;;
+      libvorbis) deferred_libvorbis+=("$ENABLED_LIBRARY") ;;
+      libtheora) deferred_libtheora+=("$ENABLED_LIBRARY") ;;
+      tesseract) deferred_tesseract+=("$ENABLED_LIBRARY") ;;
       *)         enabled_library_list+=("$ENABLED_LIBRARY") ;;
     esac
     echo -e "INFO: Enabled library ${ENABLED_LIBRARY} will be built\n" 1>>"${BASEDIR}"/build.log 2>&1
   fi
 done
-# Deferred in dependency order: fontconfig → harfbuzz → libass
-enabled_library_list+=("${deferred_fontconfig[@]}" "${deferred_harfbuzz[@]}" "${deferred_libass[@]}")
+# Deferred in dependency order: fontconfig → harfbuzz → libass; then libvorbis (after libogg) → libtheora (after libvorbis); then tesseract (after leptonica)
+enabled_library_list+=("${deferred_fontconfig[@]}" "${deferred_harfbuzz[@]}" "${deferred_libass[@]}" "${deferred_libvorbis[@]}" "${deferred_libtheora[@]}" "${deferred_tesseract[@]}")
 
 # Helper function to check if a library is in the enabled list
 is_library_enabled() {

@@ -181,9 +181,14 @@ for library in {0..61}; do
       CONFIGURE_POSTFIX+=" --enable-libilbc"
       ;;
     libtheora)
-      CFLAGS+=" $(pkg-config --cflags theora 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static theora 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-libtheora"
+      if [[ -f "${INSTALL_PKG_CONFIG_DIR}/theora.pc" ]]; then
+        CFLAGS+=" $(pkg-config --cflags theora 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static theora 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-libtheora"
+      else
+        CONFIGURE_POSTFIX+=" --disable-libtheora"
+        echo -e "\nWARN: libtheora was enabled but theora.pc not found; FFmpeg will be built without libtheora.\n" 1>>"${BASEDIR}"/build.log 2>&1
+      fi
       ;;
     libvidstab)
       CFLAGS+=" $(pkg-config --cflags vidstab 2>>"${BASEDIR}"/build.log)"
@@ -273,11 +278,16 @@ for library in {0..61}; do
       fi
       ;;
     tesseract)
-      CFLAGS+=" $(pkg-config --cflags tesseract 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static tesseract 2>>"${BASEDIR}"/build.log)"
-      CFLAGS+=" $(pkg-config --cflags giflib 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static giflib 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-libtesseract"
+      if [[ -f "${INSTALL_PKG_CONFIG_DIR}/tesseract.pc" ]]; then
+        CFLAGS+=" $(pkg-config --cflags tesseract 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static tesseract 2>>"${BASEDIR}"/build.log)"
+        CFLAGS+=" $(pkg-config --cflags giflib 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static giflib 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-libtesseract"
+      else
+        CONFIGURE_POSTFIX+=" --disable-libtesseract"
+        echo -e "\nWARN: tesseract was enabled but tesseract.pc not found; FFmpeg will be built without libtesseract.\n" 1>>"${BASEDIR}"/build.log 2>&1
+      fi
       ;;
     twolame)
       CFLAGS+=" $(pkg-config --cflags twolame 2>>"${BASEDIR}"/build.log)"
