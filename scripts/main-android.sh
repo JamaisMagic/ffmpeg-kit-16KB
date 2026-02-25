@@ -156,7 +156,7 @@ while [ ${#enabled_library_list[@]} -gt $completed ]; do
       fi
       ;;
     srt)
-      if [[ $OK_openssl -eq 1 ]]; then
+      if [[ $OK_openssl -eq 1 ]] || [[ $OK_gnutls -eq 1 ]]; then
         run=1
       fi
       ;;
@@ -303,7 +303,7 @@ while [ ${#enabled_library_list[@]} -gt $completed ]; do
           fi
           ;;
         srt)
-          if ! is_library_enabled "openssl"; then
+          if ! is_library_enabled "openssl" && ! is_library_enabled "gnutls"; then
             deps_missing=1
           fi
           ;;

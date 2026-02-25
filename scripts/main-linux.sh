@@ -41,7 +41,7 @@ while [ ${#enabled_library_list[@]} -gt $completed ]; do
     let run=0
     case $library in
     srt)
-      if [[ $OK_openssl -eq 1 ]]; then
+      if [[ $OK_openssl -eq 1 ]] || [[ $OK_gnutls -eq 1 ]]; then
         run=1
       fi
       ;;
