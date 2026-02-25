@@ -28,8 +28,24 @@ export CFLAGS=$(get_cflags "${LIB_NAME}")
 export CXXFLAGS=$(get_cxxflags "${LIB_NAME}")
 export LDFLAGS=$(get_ldflags "${LIB_NAME}")
 export PKG_CONFIG_LIBDIR="${INSTALL_PKG_CONFIG_DIR}"
+export PKG_CONFIG_PATH="${INSTALL_PKG_CONFIG_DIR}"
+
+# Ensure pkg-config finds prebuilt .pc files (fontconfig, libass, etc.)
+echo -e "\nINFO: PKG_CONFIG_PATH=${PKG_CONFIG_PATH}\n" 1>>"${BASEDIR}"/build.log 2>&1
 
 cd "${BASEDIR}"/src/"${LIB_NAME}" 1>>"${BASEDIR}"/build.log 2>&1 || return 1
+
+# Fail early if fontconfig or libass are enabled but not built (missing .pc)
+if [[ ${ENABLED_LIBRARIES[0]} -eq 1 ]] && [[ ! -f "${INSTALL_PKG_CONFIG_DIR}/fontconfig.pc" ]]; then
+  echo -e "\n(*) fontconfig was enabled for ffmpeg but fontconfig.pc was not found.\n"
+  echo -e "(*) Build fontconfig first (enable and build it before ffmpeg).\n"
+  return 1
+fi
+if [[ ${ENABLED_LIBRARIES[6]} -eq 1 ]] && [[ ! -f "${INSTALL_PKG_CONFIG_DIR}/libass.pc" ]]; then
+  echo -e "\n(*) libass was enabled for ffmpeg but libass.pc was not found.\n"
+  echo -e "(*) Build libass and its deps first: libuuid, expat, libiconv, freetype, fribidi, fontconfig, libpng, harfbuzz.\n"
+  return 1
+fi
 
 # SET BUILD OPTIONS
 TARGET_CPU=""
