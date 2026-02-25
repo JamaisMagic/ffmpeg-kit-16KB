@@ -37,17 +37,21 @@ if [ ! -d "${PKG_CONFIG_DIRECTORY}" ]; then
   mkdir -p "${PKG_CONFIG_DIRECTORY}" || return 1
 fi
 
-# FILTER WHICH EXTERNAL LIBRARIES WILL BE BUILT
+# FILTER WHICH EXTERNAL LIBRARIES WILL BE BUILT (dependency order: build fontconfig/harfbuzz/libass last so their deps are ready)
 # NOTE THAT BUILT-IN LIBRARIES ARE FORWARDED TO FFMPEG SCRIPT WITHOUT ANY PROCESSING
 enabled_library_list=()
+enabled_library_list_deferred=()
 for library in {1..50}; do
   if [[ ${!library} -eq 1 ]]; then
     ENABLED_LIBRARY=$(get_library_name $((library - 1)))
-    enabled_library_list+=(${ENABLED_LIBRARY})
-
+    case "$ENABLED_LIBRARY" in
+      fontconfig|harfbuzz|libass) enabled_library_list_deferred+=("$ENABLED_LIBRARY") ;;
+      *)                          enabled_library_list+=("$ENABLED_LIBRARY") ;;
+    esac
     echo -e "INFO: Enabled library ${ENABLED_LIBRARY} will be built\n" 1>>"${BASEDIR}"/build.log 2>&1
   fi
 done
+enabled_library_list+=("${enabled_library_list_deferred[@]}")
 
 # Helper function to check if a library is in the enabled list
 is_library_enabled() {
