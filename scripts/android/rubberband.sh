@@ -37,7 +37,7 @@ if [[ -n "${EXISTING_SOURCES}" ]]; then
       next
     }
     in_library_sources {
-      # Hit a non-continuation line, we're done with LIBRARY_SOURCES
+      # Hit a non-continuation line; we are done with LIBRARY_SOURCES
       in_library_sources = 0
     }
     { print }
