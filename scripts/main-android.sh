@@ -40,18 +40,21 @@ fi
 # FILTER WHICH EXTERNAL LIBRARIES WILL BE BUILT (dependency order: build fontconfig/harfbuzz/libass last so their deps are ready)
 # NOTE THAT BUILT-IN LIBRARIES ARE FORWARDED TO FFMPEG SCRIPT WITHOUT ANY PROCESSING
 enabled_library_list=()
-enabled_library_list_deferred=()
+deferred_fontconfig=(); deferred_harfbuzz=(); deferred_libass=()
 for library in {1..50}; do
   if [[ ${!library} -eq 1 ]]; then
     ENABLED_LIBRARY=$(get_library_name $((library - 1)))
     case "$ENABLED_LIBRARY" in
-      fontconfig|harfbuzz|libass) enabled_library_list_deferred+=("$ENABLED_LIBRARY") ;;
-      *)                          enabled_library_list+=("$ENABLED_LIBRARY") ;;
+      fontconfig) deferred_fontconfig+=("$ENABLED_LIBRARY") ;;
+      harfbuzz)  deferred_harfbuzz+=("$ENABLED_LIBRARY") ;;
+      libass)    deferred_libass+=("$ENABLED_LIBRARY") ;;
+      *)         enabled_library_list+=("$ENABLED_LIBRARY") ;;
     esac
     echo -e "INFO: Enabled library ${ENABLED_LIBRARY} will be built\n" 1>>"${BASEDIR}"/build.log 2>&1
   fi
 done
-enabled_library_list+=("${enabled_library_list_deferred[@]}")
+# Deferred in dependency order: fontconfig → harfbuzz → libass
+enabled_library_list+=("${deferred_fontconfig[@]}" "${deferred_harfbuzz[@]}" "${deferred_libass[@]}")
 
 # Helper function to check if a library is in the enabled list
 is_library_enabled() {
