@@ -21,6 +21,8 @@ export CFLAGS=$(get_cflags "${LIB_NAME}")
 export CXXFLAGS=$(get_cxxflags "${LIB_NAME}")
 export LDFLAGS=$(get_ldflags "${LIB_NAME}")
 export PKG_CONFIG_LIBDIR="${INSTALL_PKG_CONFIG_DIR}"
+# Use only current arch's pkgconfig so dependencies (e.g. libsndfile for twolame) are not taken from another arch
+export PKG_CONFIG_PATH="${INSTALL_PKG_CONFIG_DIR}"
 
 echo -e "----------------------------------------------------------------"
 echo -e "\nINFO: Building ${LIB_NAME} for ${HOST} with the following environment variables\n"

@@ -118,7 +118,7 @@ get_library_source() {
     ;;
   libpng)
     SOURCE_REPO_URL="https://github.com/arthenica/libpng"
-    SOURCE_ID="v1.6.53"
+    SOURCE_ID="v1.6.51"
     SOURCE_TYPE="TAG"
     ;;
   libsamplerate)
@@ -137,8 +137,8 @@ get_library_source() {
     SOURCE_TYPE="TAG"
     ;;
   libuuid)
-    SOURCE_REPO_URL="https://github.com/arthenica/libuuid"
-    SOURCE_ID="libuuid-1.0.3"
+    SOURCE_REPO_URL="https://github.com/util-linux/util-linux"
+    SOURCE_ID="v2.40"
     SOURCE_TYPE="TAG"
     ;;
   libvidstab)
@@ -178,7 +178,7 @@ get_library_source() {
     ;;
   openh264)
     SOURCE_REPO_URL="https://github.com/arthenica/openh264"
-    SOURCE_ID="v2.5.1"
+    SOURCE_ID="v2.5.0"
     SOURCE_TYPE="TAG"
     ;;
   openssl)
@@ -193,12 +193,12 @@ get_library_source() {
     ;;
   rubberband)
     SOURCE_REPO_URL="https://github.com/arthenica/rubberband"
-    SOURCE_ID="v1.9.2"
+    SOURCE_ID="v3.0.0"
     SOURCE_TYPE="TAG"
     ;;
   sdl)
     SOURCE_REPO_URL="https://github.com/arthenica/SDL"
-    SOURCE_ID="release-2.24.2"
+    SOURCE_ID="release-2.30.12"
     SOURCE_TYPE="TAG"
     ;;
   shine)
@@ -232,8 +232,8 @@ get_library_source() {
     SOURCE_TYPE="TAG"
     ;;
   tiff)
-    SOURCE_REPO_URL="https://github.com/arthenica/libtiff"
-    SOURCE_ID="v4.1.0"
+    SOURCE_REPO_URL="https://github.com/libsdl-org/libtiff"
+    SOURCE_ID="v4.7.1"
     SOURCE_TYPE="TAG"
     ;;
   twolame)

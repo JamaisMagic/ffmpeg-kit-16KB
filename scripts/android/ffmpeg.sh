@@ -28,8 +28,24 @@ export CFLAGS=$(get_cflags "${LIB_NAME}")
 export CXXFLAGS=$(get_cxxflags "${LIB_NAME}")
 export LDFLAGS=$(get_ldflags "${LIB_NAME}")
 export PKG_CONFIG_LIBDIR="${INSTALL_PKG_CONFIG_DIR}"
+export PKG_CONFIG_PATH="${INSTALL_PKG_CONFIG_DIR}"
+
+# Ensure pkg-config finds prebuilt .pc files (fontconfig, libass, etc.)
+echo -e "\nINFO: PKG_CONFIG_PATH=${PKG_CONFIG_PATH}\n" 1>>"${BASEDIR}"/build.log 2>&1
 
 cd "${BASEDIR}"/src/"${LIB_NAME}" 1>>"${BASEDIR}"/build.log 2>&1 || return 1
+
+# Fail early if fontconfig or libass are enabled but not built (missing .pc)
+if [[ ${ENABLED_LIBRARIES[0]} -eq 1 ]] && [[ ! -f "${INSTALL_PKG_CONFIG_DIR}/fontconfig.pc" ]]; then
+  echo -e "\n(*) fontconfig was enabled for ffmpeg but fontconfig.pc was not found.\n"
+  echo -e "(*) Build fontconfig first (enable and build it before ffmpeg).\n"
+  return 1
+fi
+if [[ ${ENABLED_LIBRARIES[6]} -eq 1 ]] && [[ ! -f "${INSTALL_PKG_CONFIG_DIR}/libass.pc" ]]; then
+  echo -e "\n(*) libass was enabled for ffmpeg but libass.pc was not found.\n"
+  echo -e "(*) Build libass and its deps first: libuuid, expat, libiconv, freetype, fribidi, fontconfig, libpng, harfbuzz.\n"
+  return 1
+fi
 
 # SET BUILD OPTIONS
 TARGET_CPU=""
@@ -112,6 +128,8 @@ for library in {0..61}; do
     gmp)
       CFLAGS+=" $(pkg-config --cflags gmp 2>>"${BASEDIR}"/build.log)"
       LDFLAGS+=" $(pkg-config --libs --static gmp 2>>"${BASEDIR}"/build.log)"
+      # Explicitly add gmp library path to ensure configure script can find it
+      LDFLAGS+=" -L${LIB_INSTALL_BASE}/gmp/lib"
       CONFIGURE_POSTFIX+=" --enable-gmp"
       ;;
     gnutls)
@@ -135,9 +153,21 @@ for library in {0..61}; do
       CONFIGURE_POSTFIX+=" --enable-libaom"
       ;;
     libass)
-      CFLAGS+=" $(pkg-config --cflags libass 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static libass 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-libass"
+      # Check if libass is available via pkg-config before enabling it
+      pkg-config --exists libass 2>>"${BASEDIR}"/build.log
+      if [[ $? -eq 0 ]]; then
+        CFLAGS+=" $(pkg-config --cflags libass 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static libass 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-libass"
+      else
+        echo -e "ERROR: libass was enabled but not found in the pkg-config search path.\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "ERROR: libass was enabled but not found. Please ensure libass is built before building ffmpeg.\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "ERROR: libass requires the following dependencies: libuuid, expat, libiconv, freetype, fribidi, fontconfig, libpng, harfbuzz\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "\n(*) libass was enabled but not found\n"
+        echo -e "(*) Please ensure libass and all its dependencies are enabled and built before building ffmpeg\n"
+        echo -e "(*) Required dependencies: libuuid, expat, libiconv, freetype, fribidi, fontconfig, libpng, harfbuzz\n"
+        exit 1
+      fi
       ;;
     libiconv)
       CFLAGS+=" $(pkg-config --cflags libiconv 2>>"${BASEDIR}"/build.log)"
@@ -151,9 +181,14 @@ for library in {0..61}; do
       CONFIGURE_POSTFIX+=" --enable-libilbc"
       ;;
     libtheora)
-      CFLAGS+=" $(pkg-config --cflags theora 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static theora 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-libtheora"
+      if [[ -f "${INSTALL_PKG_CONFIG_DIR}/theora.pc" ]]; then
+        CFLAGS+=" $(pkg-config --cflags theora 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static theora 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-libtheora"
+      else
+        CONFIGURE_POSTFIX+=" --disable-libtheora"
+        echo -e "\nWARN: libtheora was enabled but theora.pc not found; FFmpeg will be built without libtheora.\n" 1>>"${BASEDIR}"/build.log 2>&1
+      fi
       ;;
     libvidstab)
       CFLAGS+=" $(pkg-config --cflags vidstab 2>>"${BASEDIR}"/build.log)"
@@ -207,9 +242,16 @@ for library in {0..61}; do
       CONFIGURE_POSTFIX+=" --enable-librubberband"
       ;;
     sdl)
-      CFLAGS+=" $(pkg-config --cflags sdl2 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static sdl2 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-sdl2"
+      SDL2_PC="${INSTALL_PKG_CONFIG_DIR}/sdl2.pc"
+      if [[ -f "${SDL2_PC}" ]] || [[ -f "${INSTALL_PKG_CONFIG_DIR}/SDL2.pc" ]]; then
+        echo -e "DEBUG: Enabling sdl2 (sdl2.pc found at ${INSTALL_PKG_CONFIG_DIR})\n" 1>>"${BASEDIR}"/build.log 2>&1
+        CFLAGS+=" $(pkg-config --cflags sdl2 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static sdl2 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-sdl2"
+      else
+        CONFIGURE_POSTFIX+=" --disable-sdl2"
+        echo -e "\nWARN: sdl enabled but sdl2.pc/SDL2.pc not found at ${INSTALL_PKG_CONFIG_DIR}; FFmpeg will be built without sdl2.\n" 1>>"${BASEDIR}"/build.log 2>&1
+      fi
       ;;
     shine)
       CFLAGS+=" $(pkg-config --cflags shine 2>>"${BASEDIR}"/build.log)"
@@ -232,16 +274,27 @@ for library in {0..61}; do
       CONFIGURE_POSTFIX+=" --enable-libspeex"
       ;;
     srt)
-      CFLAGS+=" $(pkg-config --cflags srt 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static srt 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-libsrt"
+      if [[ -f "${INSTALL_PKG_CONFIG_DIR}/srt.pc" ]]; then
+        echo -e "DEBUG: Enabling libsrt (srt.pc at ${INSTALL_PKG_CONFIG_DIR}/srt.pc)\n" 1>>"${BASEDIR}"/build.log 2>&1
+        CFLAGS+=" $(pkg-config --cflags srt 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static srt 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-libsrt"
+      else
+        CONFIGURE_POSTFIX+=" --disable-libsrt"
+        echo -e "\nWARN: srt was enabled but srt.pc not found at ${INSTALL_PKG_CONFIG_DIR}/srt.pc; FFmpeg will be built without libsrt.\n" 1>>"${BASEDIR}"/build.log 2>&1
+      fi
       ;;
     tesseract)
-      CFLAGS+=" $(pkg-config --cflags tesseract 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static tesseract 2>>"${BASEDIR}"/build.log)"
-      CFLAGS+=" $(pkg-config --cflags giflib 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static giflib 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-libtesseract"
+      if [[ -f "${INSTALL_PKG_CONFIG_DIR}/tesseract.pc" ]]; then
+        CFLAGS+=" $(pkg-config --cflags tesseract 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static tesseract 2>>"${BASEDIR}"/build.log)"
+        CFLAGS+=" $(pkg-config --cflags giflib 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static giflib 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-libtesseract"
+      else
+        CONFIGURE_POSTFIX+=" --disable-libtesseract"
+        echo -e "\nWARN: tesseract was enabled but tesseract.pc not found; FFmpeg will be built without libtesseract.\n" 1>>"${BASEDIR}"/build.log 2>&1
+      fi
       ;;
     twolame)
       CFLAGS+=" $(pkg-config --cflags twolame 2>>"${BASEDIR}"/build.log)"
@@ -340,6 +393,21 @@ fi
 
 export LDFLAGS+=" -L${ANDROID_NDK_ROOT}/platforms/android-${API}/arch-${TOOLCHAIN_ARCH}/usr/lib"
 
+# Remove the host library path from LDFLAGS to prevent linking against x86_64 libraries
+# The host library path contains x86_64 libraries that are incompatible with ARM targets
+# Match only the path ending with /toolchains/llvm/prebuilt/TOOLCHAIN/lib (without subdirectories)
+# This is the host library path, not the ARM-specific paths like .../arm-linux-androideabi/lib or .../sysroot/...
+export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-L[^ ]*/toolchains/llvm/prebuilt/[^ /]+/lib([[:space:]]\|$)||g")
+
+# Remove -lpthread from LDFLAGS - on Android, pthread is part of libc and -pthread compiler flag is sufficient
+# The -lpthread linker flag doesn't exist on Android and causes linker errors
+export LDFLAGS=$(echo "${LDFLAGS}" | sed -E "s|-lpthread([[:space:]]\|$)||g")
+
+# Ensure gmp library path is available if gmp is enabled (check if --enable-gmp is in CONFIGURE_POSTFIX)
+if [[ "${CONFIGURE_POSTFIX}" == *"--enable-gmp"* ]]; then
+  export LDFLAGS+=" -L${LIB_INSTALL_BASE}/gmp/lib"
+fi
+
 # LINKING WITH ANDROID LTS SUPPORT LIBRARY IS NECESSARY FOR API < 18
 if [[ -n ${FFMPEG_KIT_LTS_BUILD} ]] && [[ ${API} -lt 18 ]]; then
   export LDFLAGS+=" -Wl,--whole-archive ${BASEDIR}/android/ffmpeg-kit-android-lib/src/main/cpp/libandroidltssupport.a -Wl,--no-whole-archive"
@@ -410,6 +478,17 @@ else
   awk '{gsub(/ff_file_protocol;/,"ff_file_protocol;\nextern const URLProtocol ff_saf_protocol;")}1' libavformat/protocols.c > libavformat/protocols.c.tmp
   cat libavformat/protocols.c.tmp > libavformat/protocols.c
   echo -e "\nINFO: Enabled custom ffmpeg-kit protocols\n" 1>>"${BASEDIR}"/build.log 2>&1
+fi
+
+# When building with sdl2 for Android: patch FFmpeg configure to enable sdl2 from pkg-config
+# if the normal check failed (e.g. run test fails when cross-compiling). Only the run test is skipped.
+if [[ "${CONFIGURE_POSTFIX}" == *"--enable-sdl2"* ]] && [[ -f "${BASEDIR}/src/ffmpeg/configure" ]]; then
+  if grep -q "Android: enable sdl2 from pkg-config when cross-compiling" "${BASEDIR}/src/ffmpeg/configure" 2>/dev/null; then
+    echo -e "INFO: FFmpeg configure already patched for Android sdl2.\n" 1>>"${BASEDIR}"/build.log 2>&1
+  elif grep -q "if enabled decklink" "${BASEDIR}/src/ffmpeg/configure" 2>/dev/null; then
+    perl -i -0pe 's/(\n)(if enabled decklink\s*;\s*then)/\1# Android: enable sdl2 from pkg-config when cross-compiling (skip run test)\nif test \$target_os = "android" \&\& disabled sdl2 \&\& \$pkg_config --exists "sdl2 >= 2.0.1 sdl2 < 3.0.0" 2>\/dev\/null; then\n  sdl2_cflags=\$(\$pkg_config --cflags sdl2)\n  sdl2_extralibs=\$(\$pkg_config --libs --static sdl2)\n  enable sdl2\nfi\n\2/s' "${BASEDIR}/src/ffmpeg/configure" 1>>"${BASEDIR}"/build.log 2>&1 || true
+    echo -e "INFO: Patched FFmpeg configure to enable sdl2 on Android from pkg-config (skip run test).\n" 1>>"${BASEDIR}"/build.log 2>&1
+  fi
 fi
 
 ###################################################################

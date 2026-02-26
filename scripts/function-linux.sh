@@ -481,7 +481,20 @@ EOF
 create_srt_package_config() {
   local SRT_VERSION="$1"
 
-  cat >"${INSTALL_PKG_CONFIG_DIR}/srt.pc" <<EOF
+  # SRT was built with either OpenSSL or GnuTLS; srt.pc must only require the one that exists (else pkg-config fails when openssl is disabled)
+  local SRT_REQUIRES=""
+  if [[ -f "${INSTALL_PKG_CONFIG_DIR}/openssl.pc" ]]; then
+    SRT_REQUIRES="openssl libcrypto"
+    echo -e "DEBUG: create_srt_package_config: SRT built with OpenSSL, Requires=${SRT_REQUIRES}\n" 1>>"${BASEDIR}"/build.log 2>&1
+  elif [[ -f "${INSTALL_PKG_CONFIG_DIR}/gnutls.pc" ]]; then
+    SRT_REQUIRES="gnutls"
+    echo -e "DEBUG: create_srt_package_config: SRT built with GnuTLS, Requires=${SRT_REQUIRES}\n" 1>>"${BASEDIR}"/build.log 2>&1
+  else
+    echo -e "DEBUG: create_srt_package_config: no openssl.pc or gnutls.pc in ${INSTALL_PKG_CONFIG_DIR}, omitting Requires\n" 1>>"${BASEDIR}"/build.log 2>&1
+  fi
+
+  if [[ -n "${SRT_REQUIRES}" ]]; then
+    cat >"${INSTALL_PKG_CONFIG_DIR}/srt.pc" <<EOF
 prefix=${LIB_INSTALL_BASE}/srt
 exec_prefix=\${prefix}
 libdir=\${exec_prefix}/lib
@@ -494,8 +507,25 @@ Version: ${SRT_VERSION}
 Libs: -L\${libdir} -lsrt
 Libs.private: -lc -lm -ldl -lstdc++
 Cflags: -I\${includedir} -I\${includedir}/srt
-Requires: openssl libcrypto
+Requires: ${SRT_REQUIRES}
 EOF
+  else
+    cat >"${INSTALL_PKG_CONFIG_DIR}/srt.pc" <<EOF
+prefix=${LIB_INSTALL_BASE}/srt
+exec_prefix=\${prefix}
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: srt
+Description: SRT library set
+Version: ${SRT_VERSION}
+
+Libs: -L\${libdir} -lsrt
+Libs.private: -lc -lm -ldl -lstdc++
+Cflags: -I\${includedir} -I\${includedir}/srt
+EOF
+  fi
+  echo -e "DEBUG: create_srt_package_config: wrote ${INSTALL_PKG_CONFIG_DIR}/srt.pc\n" 1>>"${BASEDIR}"/build.log 2>&1
 }
 
 create_zimg_package_config() {
