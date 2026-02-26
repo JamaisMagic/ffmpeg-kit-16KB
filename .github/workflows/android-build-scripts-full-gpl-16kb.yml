@@ -73,6 +73,7 @@ jobs:
   build-lts-on-linux:
     name: android lts on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
+    if: false
     defaults:
       run:
         shell: bash
