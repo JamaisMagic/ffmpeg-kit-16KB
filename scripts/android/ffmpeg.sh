@@ -242,9 +242,19 @@ for library in {0..61}; do
       CONFIGURE_POSTFIX+=" --enable-librubberband"
       ;;
     sdl)
-      CFLAGS+=" $(pkg-config --cflags sdl2 2>>"${BASEDIR}"/build.log)"
-      LDFLAGS+=" $(pkg-config --libs --static sdl2 2>>"${BASEDIR}"/build.log)"
-      CONFIGURE_POSTFIX+=" --enable-sdl2"
+      SDL2_PC="${INSTALL_PKG_CONFIG_DIR}/sdl2.pc"
+      if [[ -f "${SDL2_PC}" ]] || [[ -f "${INSTALL_PKG_CONFIG_DIR}/SDL2.pc" ]]; then
+        echo -e "DEBUG: Enabling sdl2 (sdl2.pc found at ${INSTALL_PKG_CONFIG_DIR})\n" 1>>"${BASEDIR}"/build.log 2>&1
+        CFLAGS+=" $(pkg-config --cflags sdl2 2>>"${BASEDIR}"/build.log)"
+        LDFLAGS+=" $(pkg-config --libs --static sdl2 2>>"${BASEDIR}"/build.log)"
+        CONFIGURE_POSTFIX+=" --enable-sdl2"
+      else
+        CONFIGURE_POSTFIX+=" --disable-sdl2"
+        echo -e "\nWARN: sdl enabled but sdl2.pc/SDL2.pc not found at ${INSTALL_PKG_CONFIG_DIR}\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "DEBUG: pkgconfig dir contents:\n" 1>>"${BASEDIR}"/build.log 2>&1
+        ls -la "${INSTALL_PKG_CONFIG_DIR}" 1>>"${BASEDIR}"/build.log 2>&1 || true
+        echo -e "WARN: FFmpeg will be built without sdl2.\n" 1>>"${BASEDIR}"/build.log 2>&1
+      fi
       ;;
     shine)
       CFLAGS+=" $(pkg-config --cflags shine 2>>"${BASEDIR}"/build.log)"
