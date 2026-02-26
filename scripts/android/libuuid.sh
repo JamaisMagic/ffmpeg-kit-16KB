@@ -17,7 +17,7 @@ fi
 # util-linux enforces 64-bit time_t by default. Android armv7 toolchains can fail
 # this check, so disable the year2038 requirement only for 32-bit ARM targets.
 YEAR2038_OPTION=""
-if [[ "${ARCH}" == "arm-v7a" ]] || [[ "${ARCH}" == "arm-v7a-neon" ]]; then
+if [[ "${ARCH}" == "arm-v7a" ]] || [[ "${ARCH}" == "arm-v7a-neon" ]] || [[ "${ARCH}" == "x86" ]]; then
   YEAR2038_OPTION="--disable-year2038"
 fi
 
