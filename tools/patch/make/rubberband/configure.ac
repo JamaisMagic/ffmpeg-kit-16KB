@@ -1,7 +1,8 @@
 
 AC_INIT(RubberBand, 1.8.2, chris.cannam@breakfastquay.com)
 
-AC_CONFIG_SRCDIR(src/StretcherImpl.h)
+# USE Makefile.in FOR SOURCE CHECK SINCE IT'S GUARANTEED TO EXIST (COPIED BY BUILD SCRIPT)
+AC_CONFIG_SRCDIR([Makefile.in])
 AC_PROG_CXX
 AC_PROG_CC
 AC_HEADER_STDC
