@@ -250,10 +250,7 @@ for library in {0..61}; do
         CONFIGURE_POSTFIX+=" --enable-sdl2"
       else
         CONFIGURE_POSTFIX+=" --disable-sdl2"
-        echo -e "\nWARN: sdl enabled but sdl2.pc/SDL2.pc not found at ${INSTALL_PKG_CONFIG_DIR}\n" 1>>"${BASEDIR}"/build.log 2>&1
-        echo -e "DEBUG: pkgconfig dir contents:\n" 1>>"${BASEDIR}"/build.log 2>&1
-        ls -la "${INSTALL_PKG_CONFIG_DIR}" 1>>"${BASEDIR}"/build.log 2>&1 || true
-        echo -e "WARN: FFmpeg will be built without sdl2.\n" 1>>"${BASEDIR}"/build.log 2>&1
+        echo -e "\nWARN: sdl enabled but sdl2.pc/SDL2.pc not found at ${INSTALL_PKG_CONFIG_DIR}; FFmpeg will be built without sdl2.\n" 1>>"${BASEDIR}"/build.log 2>&1
       fi
       ;;
     shine)
@@ -481,6 +478,17 @@ else
   awk '{gsub(/ff_file_protocol;/,"ff_file_protocol;\nextern const URLProtocol ff_saf_protocol;")}1' libavformat/protocols.c > libavformat/protocols.c.tmp
   cat libavformat/protocols.c.tmp > libavformat/protocols.c
   echo -e "\nINFO: Enabled custom ffmpeg-kit protocols\n" 1>>"${BASEDIR}"/build.log 2>&1
+fi
+
+# When building with sdl2 for Android: patch FFmpeg configure to enable sdl2 from pkg-config
+# if the normal check failed (e.g. run test fails when cross-compiling). Only the run test is skipped.
+if [[ "${CONFIGURE_POSTFIX}" == *"--enable-sdl2"* ]] && [[ -f "${BASEDIR}/src/ffmpeg/configure" ]]; then
+  if grep -q "Android: enable sdl2 from pkg-config when cross-compiling" "${BASEDIR}/src/ffmpeg/configure" 2>/dev/null; then
+    echo -e "INFO: FFmpeg configure already patched for Android sdl2.\n" 1>>"${BASEDIR}"/build.log 2>&1
+  elif grep -q "if enabled decklink" "${BASEDIR}/src/ffmpeg/configure" 2>/dev/null; then
+    perl -i -0pe 's/(\n)(if enabled decklink\s*;\s*then)/\1# Android: enable sdl2 from pkg-config when cross-compiling (skip run test)\nif test \$target_os = "android" \&\& disabled sdl2 \&\& \$pkg_config --exists "sdl2 >= 2.0.1 sdl2 < 3.0.0" 2>\/dev\/null; then\n  sdl2_cflags=\$(\$pkg_config --cflags sdl2)\n  sdl2_extralibs=\$(\$pkg_config --libs --static sdl2)\n  enable sdl2\nfi\n\2/s' "${BASEDIR}/src/ffmpeg/configure" 1>>"${BASEDIR}"/build.log 2>&1 || true
+    echo -e "INFO: Patched FFmpeg configure to enable sdl2 on Android from pkg-config (skip run test).\n" 1>>"${BASEDIR}"/build.log 2>&1
+  fi
 fi
 
 ###################################################################
