@@ -7,6 +7,7 @@ jobs:
   build-main-on-linux:
     name: android main on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
+    timeout-minutes: 1440
     defaults:
       run:
         shell: bash
@@ -23,28 +24,18 @@ jobs:
       - uses: actions/checkout@v4
       - name: set up build tools
         run: |
-          sudo apt update && sudo apt -y install build-essential gperf groff meson autoconf automake autogen gnulib gettext gtk-doc-tools gnutls-bin libgnutls28-dev libssl-dev
-          sudo apt install -y dash git-core libtool autopoint libavutil-dev libv4l-dev
-          sudo apt install -y python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
-          sudo apt install -y libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk
-          sudo apt install -y libtss2-dev libunbound-dev dns-root-data bison
-          sudo apt install -y texinfo texlive texlive-plain-generic texlive-extra-utils
-          sudo apt install -y libfreetype6-dev libglib2.0-dev libcairo2-dev ragel
-          sudo apt install -y pkg-config nasm yasm ninja-build
-          sudo apt install -y --reinstall gcc-14
-          sudo ln -s -f /usr/bin/gcc-14 /usr/bin/gcc
-          export OPENSSL_ROOT_DIR=/usr/include/openssl
-          wget https://cmake.org/files/v3.31/cmake-3.31.8.tar.gz
-          tar -xzvf cmake-3.31.8.tar.gz
-          cd cmake-3.31.8
-          ./bootstrap
-          make -j$(nproc)
-          sudo make install
-          which cmake
-          /usr/local/bin/cmake
-          export PATH=/usr/local/bin/cmake:$PATH
-          source ~/.bashrc
-          cmake --version
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential gperf groff meson autoconf automake autogen gnulib gettext gtk-doc-tools gnutls-bin libgnutls28-dev libssl-dev dash git-core libtool autopoint libavutil-dev libv4l-dev python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk libtss2-dev libunbound-dev dns-root-data bison texinfo texlive texlive-plain-generic texlive-extra-utils libfreetype6-dev libglib2.0-dev libcairo2-dev ragel pkg-config nasm yasm ninja-build
+          sudo apt-get install -y --no-install-recommends gcc-14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+          echo "OPENSSL_ROOT_DIR=/usr/include/openssl" >> $GITHUB_ENV
+          wget -q https://github.com/Kitware/CMake/releases/download/v3.31.8/cmake-3.31.8-linux-x86_64.tar.gz -O cmake.tar.gz
+          tar -xzf cmake.tar.gz
+          mkdir -p .cmake
+          mv cmake-3.31.8-linux-x86_64 .cmake/
+          echo "$PWD/.cmake/cmake-3.31.8-linux-x86_64/bin" >> $GITHUB_PATH
+          echo "PATH=$PWD/.cmake/cmake-3.31.8-linux-x86_64/bin:$PATH" >> $GITHUB_ENV
+          ./.cmake/cmake-3.31.8-linux-x86_64/bin/cmake --version
           gcc --version
       - name: set up adopt jdk 17
         uses: actions/setup-java@v3
@@ -59,7 +50,7 @@ jobs:
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
-        # run: ./android.sh -d --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
+        # run: ./android.sh -d --full --disable-arm-v7a --enable-gpl --disable-lib-openssl
         run: ./android.sh --disable-arm-v7a --disable-lib-openssl --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvpx --enable-x264 --enable-x265 --enable-opus
       - name: prepare and upload main aar
         run: |
@@ -79,11 +70,12 @@ jobs:
         run: cat build.log
       - name: print ffbuild logs
         if: ${{ failure() }}
-        run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
+        run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -1000 ./src/ffmpeg/ffbuild/config.log'
 
   build-lts-on-linux:
     name: android lts on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
+    timeout-minutes: 1440
     defaults:
       run:
         shell: bash
@@ -100,28 +92,18 @@ jobs:
       - uses: actions/checkout@v4
       - name: set up build tools
         run: |
-          sudo apt update && sudo apt -y install build-essential gperf groff meson autoconf automake autogen gnulib gettext gtk-doc-tools gnutls-bin libgnutls28-dev libssl-dev
-          sudo apt install -y dash git-core libtool autopoint libavutil-dev libv4l-dev
-          sudo apt install -y python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
-          sudo apt install -y libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk
-          sudo apt install -y libtss2-dev libunbound-dev dns-root-data bison
-          sudo apt install -y texinfo texlive texlive-plain-generic texlive-extra-utils
-          sudo apt install -y libfreetype6-dev libglib2.0-dev libcairo2-dev ragel
-          sudo apt install -y pkg-config nasm yasm ninja-build
-          sudo apt install -y --reinstall gcc-14
-          sudo ln -s -f /usr/bin/gcc-14 /usr/bin/gcc
-          export OPENSSL_ROOT_DIR=/usr/include/openssl
-          wget https://cmake.org/files/v3.31/cmake-3.31.8.tar.gz
-          tar -xzvf cmake-3.31.8.tar.gz
-          cd cmake-3.31.8
-          ./bootstrap
-          make -j$(nproc)
-          sudo make install
-          which cmake
-          /usr/local/bin/cmake
-          export PATH=/usr/local/bin/cmake:$PATH
-          source ~/.bashrc
-          cmake --version
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential gperf groff meson autoconf automake autogen gnulib gettext gtk-doc-tools gnutls-bin libgnutls28-dev libssl-dev dash git-core libtool autopoint libavutil-dev libv4l-dev python3 nettle-dev libp11-kit-dev libtspi-dev libunistring-dev libtasn1-bin libtasn1-6-dev libidn2-0-dev gawk libtss2-dev libunbound-dev dns-root-data bison texinfo texlive texlive-plain-generic texlive-extra-utils libfreetype6-dev libglib2.0-dev libcairo2-dev ragel pkg-config nasm yasm ninja-build
+          sudo apt-get install -y --no-install-recommends gcc-14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+          echo "OPENSSL_ROOT_DIR=/usr/include/openssl" >> $GITHUB_ENV
+          wget -q https://github.com/Kitware/CMake/releases/download/v3.31.8/cmake-3.31.8-linux-x86_64.tar.gz -O cmake.tar.gz
+          tar -xzf cmake.tar.gz
+          mkdir -p .cmake
+          mv cmake-3.31.8-linux-x86_64 .cmake/
+          echo "$PWD/.cmake/cmake-3.31.8-linux-x86_64/bin" >> $GITHUB_PATH
+          echo "PATH=$PWD/.cmake/cmake-3.31.8-linux-x86_64/bin:$PATH" >> $GITHUB_ENV
+          ./.cmake/cmake-3.31.8-linux-x86_64/bin/cmake --version
           gcc --version
       - name: set up adopt jdk 17
         uses: actions/setup-java@v3
@@ -136,7 +118,7 @@ jobs:
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
-        # run: ./android.sh -d --lts --full --enable-gpl --disable-arm-v7a --disable-lib-openssl
+        # run: ./android.sh -d --lts --full --disable-arm-v7a --enable-gpl --disable-lib-openssl
         run: ./android.sh --lts --disable-arm-v7a --disable-lib-openssl --enable-android-media-codec --enable-android-zlib --enable-gpl --enable-gnutls --enable-lame --enable-dav1d --enable-libvpx --enable-x264 --enable-x265 --enable-opus
       - name: prepare and upload lts aar
         run: |
@@ -156,7 +138,7 @@ jobs:
         run: cat build.log
       - name: print ffbuild logs
         if: ${{ failure() }}
-        run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -500 ./src/ffmpeg/ffbuild/config.log'
+        run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -1000 ./src/ffmpeg/ffbuild/config.log'
 
   create-release:
     name: create github release

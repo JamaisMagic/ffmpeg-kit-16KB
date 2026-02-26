@@ -23,8 +23,18 @@ esac
 # WORKAROUND TO GENERATE BASE BUILD FILES
 ./configure || echo "" 2>/dev/null 1>/dev/null
 
+# SRT can use OpenSSL or GnuTLS for encryption; use whichever is built for this arch
+SRT_ENCLIB="openssl"
+SRT_OPENSSL_PC=""
+if [[ -f "${INSTALL_PKG_CONFIG_DIR}/openssl.pc" ]]; then
+  SRT_ENCLIB="openssl"
+  SRT_OPENSSL_PC="-DUSE_OPENSSL_PC=1"
+elif [[ -f "${INSTALL_PKG_CONFIG_DIR}/gnutls.pc" ]]; then
+  SRT_ENCLIB="gnutls"
+fi
+
 cmake -Wno-dev \
- -DUSE_ENCLIB=openssl \
+ -DUSE_ENCLIB="${SRT_ENCLIB}" \
  -DCMAKE_VERBOSE_MAKEFILE=0 \
  -DCMAKE_C_FLAGS="${CFLAGS}" \
  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
@@ -47,7 +57,7 @@ cmake -Wno-dev \
  -DENABLE_MONOTONIC_CLOCK=1 \
  -DENABLE_STDCXX_SYNC=1 \
  -DENABLE_CXX11=1 \
- -DUSE_OPENSSL_PC=1 \
+ ${SRT_OPENSSL_PC} \
  -DENABLE_DEBUG=0 \
  -DENABLE_LOGGING=0 \
  -DENABLE_HEAVY_LOGGING=0 \

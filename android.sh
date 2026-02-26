@@ -365,7 +365,6 @@ if [[ -n ${ANDROID_ARCHITECTURES} ]]; then
 
     echo -e -n "\nCreating Android archive under prebuilt: "
 
-    echo $ORG_GRADLE_PROJECT_SIGNINGINMEMORYKEYID 1>>"${BASEDIR}"/build.log 2>&1
     ./gradlew tasks --all 1>>"${BASEDIR}"/build.log 2>&1
     ./gradlew printEnvVariable 1>>"${BASEDIR}"/build.log 2>&1
 
