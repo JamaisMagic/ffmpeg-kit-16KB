@@ -47,7 +47,10 @@ arm-v7a-neon)
 arm64-v8a)
   # NEON IS ENABLED BY --enable-runtime-cpu-detect
   TARGET_CPU="arm64"
-  ASM_OPTIONS="--disable-neon-dotprod --disable-neon-i8mm"
+  # Disable SVE/SVE2 so libvpx RTCD does not reference SVE symbols (Android has no SVE; linker would fail).
+  # Our patched configure.sh adds sve/sve2 to ARCH_EXT_LIST so these options are accepted.
+  # Do NOT add -mno-sve/-mno-sve2: Android NDK Clang does not support those flags.
+  ASM_OPTIONS="--disable-neon-dotprod --disable-neon-i8mm --disable-sve --disable-sve2"
   export ASFLAGS="-c"
   ;;
 *)
@@ -71,7 +74,7 @@ overwrite_file "${BASEDIR}"/tools/patch/make/libvpx/configure.sh "${BASEDIR}"/sr
   --extra-cflags="${CFLAGS}" \
   --extra-cxxflags="${CXXFLAGS}" \
   --as=yasm \
-  --log=yes \
+  --log=config.log \
   --enable-libs \
   --enable-install-libs \
   --enable-pic \
@@ -103,7 +106,19 @@ overwrite_file "${BASEDIR}"/tools/patch/make/libvpx/configure.sh "${BASEDIR}"/sr
   --disable-encode-perf-tests \
   --disable-codec-srcs \
   --disable-debug-libs \
-  --disable-internal-stats || return 1
+  --disable-internal-stats 1>>"${BASEDIR}"/build.log 2>&1
+CONFIGURE_EXIT=$?
+if [[ ${CONFIGURE_EXIT} -ne 0 ]]; then
+  echo -e "\n(*) libvpx configure failed (exit ${CONFIGURE_EXIT}). Dumping config.log:\n" 1>>"${BASEDIR}"/build.log 2>&1
+  if [[ -f config.log ]]; then
+    cat config.log 1>>"${BASEDIR}"/build.log 2>&1
+    echo -e "\n(*) libvpx configure failed. Full config.log has been appended to build.log"
+  else
+    echo -e "config.log not found (configure may not have written it).\n" 1>>"${BASEDIR}"/build.log 2>&1
+    echo -e "\n(*) libvpx configure failed. config.log was not found; see build.log for configure output."
+  fi
+  return 1
+fi
 
 make -j$(get_cpu_count) || return 1
 
