@@ -5,7 +5,6 @@ on:
 
 jobs:
   build-main-on-linux:
-    if: false
     name: android main on linux (ndk-r27-16k)
     runs-on: ubuntu-24.04
     timeout-minutes: 1440
@@ -90,12 +89,6 @@ jobs:
       ARG_VERSIOM_CODE: 60107
     steps:
       - uses: actions/checkout@v4
-      - name: cache CMake
-        uses: actions/cache@v4
-        id: cmake-cache
-        with:
-          path: .cmake
-          key: cmake-3.31.8-linux-x86_64
       - name: set up build tools
         run: |
           sudo apt-get update
@@ -103,12 +96,10 @@ jobs:
           sudo apt-get install -y --no-install-recommends gcc-14
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
           echo "OPENSSL_ROOT_DIR=/usr/include/openssl" >> $GITHUB_ENV
-          if [ ! -f .cmake/cmake-3.31.8-linux-x86_64/bin/cmake ]; then
-            wget -q https://github.com/Kitware/CMake/releases/download/v3.31.8/cmake-3.31.8-linux-x86_64.tar.gz -O cmake.tar.gz
-            tar -xzf cmake.tar.gz
-            mkdir -p .cmake
-            mv cmake-3.31.8-linux-x86_64 .cmake/
-          fi
+          wget -q https://github.com/Kitware/CMake/releases/download/v3.31.8/cmake-3.31.8-linux-x86_64.tar.gz -O cmake.tar.gz
+          tar -xzf cmake.tar.gz
+          mkdir -p .cmake
+          mv cmake-3.31.8-linux-x86_64 .cmake/
           echo "$PWD/.cmake/cmake-3.31.8-linux-x86_64/bin" >> $GITHUB_PATH
           echo "PATH=$PWD/.cmake/cmake-3.31.8-linux-x86_64/bin:$PATH" >> $GITHUB_ENV
           ./.cmake/cmake-3.31.8-linux-x86_64/bin/cmake --version
