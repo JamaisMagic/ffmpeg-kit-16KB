@@ -2,10 +2,24 @@
 
 # SET BUILD OPTIONS
 if [[ -z ${FFMPEG_KIT_LTS_BUILD} ]]; then
-  ASM_OPTIONS="--enable-asm"
+  # ASM_OPTIONS="--enable-asm"
+  ASM_OPTIONS="--disable-asm"
 else
   ASM_OPTIONS="--disable-asm"
 fi
+
+# When ARM asm is enabled, fix arm2gnu.pl so generated .S uses GNU/clang-friendly mnemonics:
+# LDRHIB/LDRLOB (legacy SDT) -> ldrbhi/ldrblo; STRD rN,[rM],rK -> strd rN,rN+1,[rM],rK
+# if [[ "${ASM_OPTIONS}" = "--enable-asm" ]] && [[ -f lib/arm/arm2gnu.pl ]] && ! grep -q 'ldrbhi' lib/arm/arm2gnu.pl 2>/dev/null; then
+#   perl -i.bak -pe '
+#     if (/^\s+s\/\\\{FALSE\\\}\/0\/g;\s*$/) {
+#       $_ = "    # Modern GAS/clang: legacy ARM SDT mnemonics -> GNU syntax\n" .
+#            "    s/\\bLDRHIB\\b/ldrbhi/gi;\n" .
+#            "    s/\\bLDRLOB\\b/ldrblo/gi;\n" .
+#            "    s/\\bSTRD\\s+r(\\d+),\\s*\\[(r\\d+)\\],\\s*(r\\d+)/sprintf \"strd r%d, r%d, [%s], %s\", \$1, \$1+1, \$2, \$3/ge;\n\n" . $_;
+#     }
+#   ' lib/arm/arm2gnu.pl || true
+# fi
 
 # ALWAYS CLEAN THE PREVIOUS BUILD
 make distclean 2>/dev/null 1>/dev/null
