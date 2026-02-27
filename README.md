@@ -21,9 +21,13 @@ From ndk r25, it does not support armeabi-v7a without neon and Android 6.0(api 2
 ## Variants
 This repo include a [default release](https://github.com/JamaisMagic/ffmpeg-kit-16KB/releases/tag/ffmpeg-kit-android-2025-12-13T10-08-26) and the following variants:
 
-min: Only enable android media codec and android zlib
+min: Only enable android media codec and android zlib.
 
-tls: Base on min, enable gnutls
+tls: Base on min, enable gnutls.
+
+full: Full but non gpl libs.
+
+full-gpl: Full and enabled gpl libs.
 
 You can search the variant keywords in [Release](https://github.com/JamaisMagic/ffmpeg-kit-16KB/releases) or in [Maven Central](https://central.sonatype.com/namespace/io.github.jamaismagic.ffmpeg)
 
